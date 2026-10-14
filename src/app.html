@@ -3,16 +3,19 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&display=swap">
 <style>
-/* Layout: one-column field tool, sticky top bar, thumb-reachable action bar fixed to the bottom */
+/* Layout: one-column field tool, green top bar with a yellow safety band, thumb-reachable action bar fixed to the bottom */
 :root {
-  --bg: #EEF0EE;         /* poured-concrete grey, faint green bias */
+  --bg: #F3F6F1;         /* pale site-office green-grey */
   --surface: #FFFFFF;
-  --sunk: #E2E5E3;
-  --ink: #1B2024;
-  --muted: #5B6670;
-  --line: #CDD3D6;
-  --accent: #F2B705;     /* safety-vest yellow */
-  --on-accent: #1B2024;
+  --sunk: #E4EBE4;
+  --ink: #15241B;
+  --muted: #56685C;
+  --line: #CCD8CE;
+  --accent: #FFC400;     /* safety yellow: the one action that matters on each screen */
+  --on-accent: #15241B;
+  --green: #12753B;      /* safety green: brand bar, selections */
+  --on-green: #FFFFFF;
+  --green-soft: #E3F2E8;
   --mark: #E0322B;       /* marking red, also the "missing" signal */
   --ok: #2E8A57;
   --warn: #B86E00;
@@ -23,14 +26,14 @@
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --bg: #14181B; --surface: #1E2428; --sunk: #2A3136; --ink: #ECEFF0; --muted: #9AA6AE;
-    --line: #333C42; --accent: #F5C230; --on-accent: #14181B; --mark: #FF5A4F; --ok: #4CB97A; --warn: #E7A33A;
+    --bg: #101713; --surface: #18221B; --sunk: #233027; --ink: #E9F1EB; --muted: #98AB9E;
+    --line: #2E3D33; --accent: #FFCB2E; --on-accent: #101713; --green: #1E9A52; --on-green: #FFFFFF; --green-soft: #183A26; --mark: #FF5A4F; --ok: #4CB97A; --warn: #E7A33A;
     --scrim: rgba(0, 0, 0, .6); color-scheme: dark;
   }
 }
 :root[data-theme="dark"] {
-  --bg: #14181B; --surface: #1E2428; --sunk: #2A3136; --ink: #ECEFF0; --muted: #9AA6AE;
-  --line: #333C42; --accent: #F5C230; --on-accent: #14181B; --mark: #FF5A4F; --ok: #4CB97A; --warn: #E7A33A;
+  --bg: #101713; --surface: #18221B; --sunk: #233027; --ink: #E9F1EB; --muted: #98AB9E;
+  --line: #2E3D33; --accent: #FFCB2E; --on-accent: #101713; --green: #1E9A52; --on-green: #FFFFFF; --green-soft: #183A26; --mark: #FF5A4F; --ok: #4CB97A; --warn: #E7A33A;
   --scrim: rgba(0, 0, 0, .6); color-scheme: dark;
 }
 * { box-sizing: border-box; }
@@ -46,14 +49,15 @@ button { cursor: pointer; }
 
 /* top bar */
 .topbar {
-  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20; background: var(--surface);
-  border-bottom: 1px solid var(--line); display: flex; align-items: center; gap: 8px; min-height: 56px;
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20; background: var(--green); color: var(--on-green);
+  border-bottom: 5px solid var(--accent); display: flex; align-items: center; gap: 8px; min-height: 56px;
 }
-.topbar h1 { font-size: 17px; font-weight: 600; margin: 0; flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-wrap: balance; }
+.topbar h1 { font-size: 18px; font-weight: 700; margin: 0; flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-wrap: balance; }
 .iconbtn {
   width: 44px; height: 44px; border-radius: 22px; border: 0; background: transparent; display: grid; place-items: center; flex: none;
 }
-.iconbtn:active { background: var(--sunk); }
+.iconbtn:active { background: rgba(255,255,255,.18); }
+.iconbtn:disabled { opacity: .4; }
 .iconbtn svg { width: 24px; height: 24px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 
 main { padding-block: 16px calc(var(--bar-h) + 32px + env(safe-area-inset-bottom, 0px)); max-width: 760px; margin: 0 auto; display: grid; gap: 16px; }
@@ -70,14 +74,15 @@ main { padding-block: 16px calc(var(--bar-h) + 32px + env(safe-area-inset-bottom
   font-weight: 600; display: inline-flex; align-items: center; justify-content: center; gap: 8px; white-space: nowrap;
 }
 .btn svg { width: 20px; height: 20px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
-.btn.primary { background: var(--accent); color: var(--on-accent); border-color: var(--accent); }
+.btn.primary { background: var(--accent); color: var(--on-accent); border-color: color-mix(in srgb, var(--accent) 70%, #000); box-shadow: inset 0 -3px 0 rgba(0,0,0,.12); }
+.btn.go { background: var(--green); color: var(--on-green); border-color: var(--green); }
 .btn.danger { color: var(--mark); }
 .btn.grow { flex: 1; }
 .btn:disabled { opacity: .45; cursor: default; }
 .btn.small { min-height: 36px; padding: 0 12px; font-size: 14px; }
 
 /* home list */
-.eyebrow { font-size: 12px; letter-spacing: .06em; color: var(--muted); font-weight: 600; }
+.eyebrow { font-size: 12.5px; letter-spacing: .06em; color: var(--green); font-weight: 700; }
 .cards { display: grid; gap: 10px; }
 .card {
   background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 14px 8px 14px 16px;
@@ -88,13 +93,13 @@ main { padding-block: 16px calc(var(--bar-h) + 32px + env(safe-area-inset-bottom
 .card .meta { color: var(--muted); font-size: 13px; display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
 .chip { display: inline-flex; align-items: center; gap: 4px; font-size: 12px; font-weight: 600; padding: 2px 8px; border-radius: 99px; background: var(--sunk); color: var(--muted); }
 .chip.warn { color: var(--mark); background: color-mix(in srgb, var(--mark) 12%, transparent); }
-.chip.ok { color: var(--ok); background: color-mix(in srgb, var(--ok) 12%, transparent); }
+.chip.ok { color: var(--green); background: var(--green-soft); }
 .chip.sample { color: var(--warn); background: color-mix(in srgb, var(--warn) 14%, transparent); }
 .thumbstrip { width: 56px; height: 56px; border-radius: 8px; border: 0; padding: 0; background: var(--sunk) center/cover no-repeat; flex: none; }
 .empty { text-align: center; color: var(--muted); padding: 40px 16px; display: grid; gap: 12px; justify-items: center; }
 
 /* inspection header */
-.infobox { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 14px 16px; display: grid; gap: 6px; }
+.infobox { background: var(--green-soft); border: 1px solid color-mix(in srgb, var(--green) 25%, transparent); border-radius: var(--r); padding: 14px 16px; display: grid; gap: 6px; }
 .infobox dl { margin: 0; display: grid; grid-template-columns: auto 1fr; gap: 2px 14px; font-size: 14px; }
 .infobox dt { color: var(--muted); }
 .infobox dd { margin: 0; min-width: 0; overflow-wrap: anywhere; }
@@ -123,23 +128,23 @@ main { padding-block: 16px calc(var(--bar-h) + 32px + env(safe-area-inset-bottom
   display: grid; place-items: center; font-size: 11px; gap: 0; padding: 4px 6px; line-height: 1.1;
 }
 .tool svg { width: 22px; height: 22px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
-.tool[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.tool[aria-pressed="true"] { background: var(--green); color: var(--on-green); border-color: var(--green); }
 .swatches { display: flex; gap: 8px; align-items: center; }
 .swatch { width: 34px; height: 34px; border-radius: 17px; border: 2px solid var(--line); }
-.swatch[aria-pressed="true"] { outline: 3px solid var(--ink); outline-offset: 2px; }
+.swatch[aria-pressed="true"] { outline: 3px solid var(--green); outline-offset: 2px; }
 .seg { display: inline-flex; border: 1px solid var(--line); border-radius: var(--r); overflow: hidden; }
 .seg button { border: 0; background: var(--surface); min-height: 36px; padding: 0 12px; font-size: 13px; }
-.seg button[aria-pressed="true"] { background: var(--ink); color: var(--bg); }
+.seg button[aria-pressed="true"] { background: var(--green); color: var(--on-green); }
 .fields { display: grid; gap: 12px; }
 .field { display: grid; gap: 6px; }
-.field label { font-size: 13px; font-weight: 600; color: var(--muted); display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.field label { font-size: 14px; font-weight: 700; color: var(--green); display: flex; justify-content: space-between; align-items: center; gap: 8px; }
 .inputwrap { display: flex; gap: 8px; align-items: stretch; }
 .inputwrap textarea, .inputwrap input { flex: 1; min-width: 0; }
 textarea, input[type=text], input[type=date], select {
   width: 100%; border: 1px solid var(--line); border-radius: var(--r); background: var(--surface); padding: 10px 12px; min-height: 48px; font-size: 16px;
 }
 textarea { resize: vertical; min-height: 56px; }
-.mic { width: 52px; flex: none; border-radius: var(--r); border: 1px solid var(--line); background: var(--surface); display: grid; place-items: center; }
+.mic { width: 52px; color: var(--green); flex: none; border-radius: var(--r); border: 1px solid var(--line); background: var(--surface); display: grid; place-items: center; }
 .mic svg { width: 22px; height: 22px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 .mic.on { background: var(--mark); color: #fff; border-color: var(--mark); animation: pulse 1.2s ease-in-out infinite; }
 @keyframes pulse { 50% { box-shadow: 0 0 0 6px color-mix(in srgb, var(--mark) 30%, transparent); } }
@@ -155,9 +160,9 @@ textarea { resize: vertical; min-height: 56px; }
 .choice button { border: 2px solid var(--line); background: var(--surface); border-radius: var(--r); padding: 12px; text-align: left; display: grid; gap: 4px; }
 .choice button b { font-size: 15px; }
 .choice button span { font-size: 12.5px; color: var(--muted); }
-.choice button[aria-pressed="true"] { border-color: var(--ink); }
+.choice button[aria-pressed="true"] { border-color: var(--green); background: var(--green-soft); }
 .check { display: flex; gap: 10px; align-items: center; min-height: 40px; }
-.check input { width: 22px; height: 22px; accent-color: var(--ink); }
+.check input { width: 22px; height: 22px; accent-color: var(--green); }
 .pages { display: grid; gap: 14px; justify-items: center; }
 .pages img { width: 100%; max-width: 520px; background: #fff; box-shadow: 0 1px 4px rgba(0,0,0,.18); border-radius: 2px; }
 .pages .cap { font-size: 12px; color: var(--muted); }
@@ -215,6 +220,7 @@ const ICON = {
   undo: '<path d="M3 7v6h6"/><path d="M21 17a9 9 0 0 0-15-6.7L3 13"/>',
   redo: '<path d="M21 7v6h-6"/><path d="M3 17a9 9 0 0 1 15-6.7L21 13"/>',
   trash: '<path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/>',
+  send: '<path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4z"/>',
   prev: '<path d="M15 18l-6-6 6-6"/>', next: '<path d="M9 18l6-6-6-6"/>',
 };
 const svg = (n) => `<svg viewBox="0 0 24 24" aria-hidden="true">${ICON[n]}</svg>`;
@@ -685,7 +691,33 @@ async function renderEditor() {
   });
   bindCanvas();
   syncTools();
-  setActions('');
+  setActions(`<button class="btn go grow" id="toExport">${svg('print')}전체 출력</button>
+    <button class="btn primary grow" id="pubOne">${svg('send')}이 사진 발행</button>`);
+  $('#toExport').onclick = async () => { await flushSave(); go('export'); };
+  $('#pubOne').onclick = () => publishSheet(p);
+}
+// 발행: turn the photo being edited into a finished 사진대지 right away.
+function publishSheet(p) {
+  const n = state.photoIdx + 1;
+  const missing = !p.fields.desc.trim();
+  openSheet(`<h2>사진 ${n} 발행</h2>
+    ${missing ? `<div class="banner">${esc(settings.labels.desc)} 칸이 비어 있습니다. 그대로 발행하면 빈 칸으로 나옵니다.</div>` : '<p>입력한 내용으로 사진대지 1장을 만듭니다.</p>'}
+    <button class="btn primary" id="pJpg">사진 1장 이미지 (JPG)</button>
+    <button class="btn" id="pPdf">사진 1장 PDF</button>
+    <button class="btn" id="pCancel">닫기</button>`, s => {
+    $('#pCancel', s).onclick = closeSheet;
+    const run = async (kind) => {
+      closeSheet(); await flushSave(); toast('사진대지를 만드는 중…', 6000);
+      try {
+        const c = await composeSingle(current, p);
+        const base = `사진대지_${safeName(current.title)}_${current.date}_${String(n).padStart(2, '0')}${p.fields.loc ? '_' + safeName(p.fields.loc) : ''}`;
+        if (kind === 'jpg') await saveFile(await canvasToBlob(c, 'image/jpeg', 0.9), `${base}.jpg`);
+        else await saveFile(await buildPDF([c], null), `${base}.pdf`);
+      } catch (e) { console.error(e); toast('사진대지를 만들지 못했습니다.'); }
+    };
+    $('#pJpg', s).onclick = () => run('jpg');
+    $('#pPdf', s).onclick = () => run('pdf');
+  });
 }
 function syncTools() {
   document.querySelectorAll('[data-tool]').forEach(b => b.setAttribute('aria-pressed', b.dataset.tool === ed.tool));
@@ -845,14 +877,14 @@ function drawTable(ctx, rows, x, y, w, { fs, lab, pad, minRow, maxLines, measure
   const heights = metrics.map(ls => Math.max(minRow, ls.length * lh + pad * 1.3));
   const total = heights.reduce((a, b) => a + b, 0);
   if (measureOnly) return total;
-  ctx.save(); ctx.strokeStyle = '#3A3F44'; ctx.lineWidth = Math.max(1, fs / 18);
-  ctx.fillStyle = '#F1F2F1'; ctx.fillRect(x, y, lab, total);
+  ctx.save(); ctx.strokeStyle = '#2E3B33'; ctx.lineWidth = Math.max(1, fs / 18);
+  ctx.fillStyle = OUT.greenSoft; ctx.fillRect(x, y, lab, total);
   let yy = y;
   rows.forEach(([l, v], i) => {
     const hh = heights[i];
-    ctx.fillStyle = '#1B2024'; ctx.font = `700 ${fs}px ${FONT_CANVAS}`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillStyle = OUT.greenDark; ctx.font = `700 ${fs}px ${FONT_CANVAS}`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
     ctx.fillText(l, x + lab / 2, yy + hh / 2);
-    ctx.textAlign = 'left'; ctx.font = `400 ${fs}px ${FONT_CANVAS}`;
+    ctx.fillStyle = OUT.ink; ctx.textAlign = 'left'; ctx.font = `${i === 0 ? 400 : 500} ${fs}px ${FONT_CANVAS}`;
     const ls = metrics[i]; const startY = yy + hh / 2 - (ls.length - 1) * lh / 2;
     ls.forEach((t, j) => ctx.fillText(t, x + lab + pad, startY + j * lh));
     if (i) { ctx.beginPath(); ctx.moveTo(x, yy); ctx.lineTo(x + w, yy); ctx.stroke(); }
@@ -863,24 +895,27 @@ function drawTable(ctx, rows, x, y, w, { fs, lab, pad, minRow, maxLines, measure
   ctx.restore();
   return total;
 }
-function photoRows(p, no) {
+// Output colours: printed on white paper, so fixed rather than themed.
+const OUT = { green: '#12753B', greenDark: '#0B4A26', greenSoft: '#E3F2E8', yellow: '#FFC400', ink: '#15241B', muted: '#4D5E52' };
+function photoRows(p) {
   const L = settings.labels;
-  return [['번호', `No. ${no}    촬영 ${fmtDT(p.takenAt)}`], [L.loc, p.fields.loc], [L.desc, p.fields.desc], [L.act, p.fields.act]];
+  return [['날짜', fmtDT(p.takenAt)], [L.loc, p.fields.loc], [L.desc, p.fields.desc], [L.act, p.fields.act]];
 }
 // A4 portrait at 150 dpi
 const A4 = { w: 1240, h: 1754, m: 64 };
 function a4Header(ctx, insp, pageNo, total) {
   const { w, m } = A4;
   ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, A4.w, A4.h);
-  ctx.fillStyle = '#1B2024'; ctx.font = `700 34px ${FONT_CANVAS}`; ctx.textBaseline = 'alphabetic'; ctx.textAlign = 'left';
-  ctx.fillText('사 진 대 지', m, m + 30);
-  ctx.font = `400 22px ${FONT_CANVAS}`; ctx.fillStyle = '#3A3F44';
+  ctx.fillStyle = OUT.yellow; ctx.fillRect(m, m - 2, 12, 40);
+  ctx.fillStyle = OUT.green; ctx.font = `700 36px ${FONT_CANVAS}`; ctx.textBaseline = 'alphabetic'; ctx.textAlign = 'left';
+  ctx.fillText('사 진 대 지', m + 24, m + 30);
+  ctx.font = `500 24px ${FONT_CANVAS}`; ctx.fillStyle = OUT.ink;
   const right = `${fmtDate(insp.date)}  ·  ${pageNo} / ${total}`;
   ctx.textAlign = 'right'; ctx.fillText(right, w - m, m + 30);
   ctx.textAlign = 'left';
   const titleLine = wrapLines(ctx, `공사명: ${insp.title}${insp.category ? `   구분: ${insp.category}` : ''}${insp.inspector ? `   점검자: ${insp.inspector}` : ''}`, w - m * 2, 1)[0];
   ctx.fillText(titleLine, m, m + 70);
-  ctx.strokeStyle = '#1B2024'; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(m, m + 88); ctx.lineTo(w - m, m + 88); ctx.stroke();
+  ctx.fillStyle = OUT.green; ctx.fillRect(m, m + 86, w - m * 2, 5); ctx.fillStyle = OUT.yellow; ctx.fillRect(m, m + 91, w - m * 2, 3);
   if (settings.company) { ctx.font = `400 18px ${FONT_CANVAS}`; ctx.fillStyle = '#6A737B'; ctx.textAlign = 'right'; ctx.fillText(settings.company, w - m, A4.h - m / 2); ctx.textAlign = 'left'; }
   return m + 104;
 }
@@ -888,7 +923,7 @@ async function composeA4Pages(insp, list, withCover) {
   const pages = []; const total = Math.ceil(list.length / 2) + (withCover ? 1 : 0);
   let pageNo = 0;
   if (withCover) { pages.push(composeCover(insp, list.length)); pageNo++; }
-  const opt = { fs: 22, lab: 132, pad: 14, minRow: 46, maxLines: 2 };
+  const opt = { fs: 28, lab: 140, pad: 14, minRow: 52, maxLines: 2 };
   for (let i = 0; i < list.length; i += 2) {
     pageNo++;
     const c = document.createElement('canvas'); c.width = A4.w; c.height = A4.h; const ctx = c.getContext('2d');
@@ -898,12 +933,12 @@ async function composeA4Pages(insp, list, withCover) {
     for (let s = 0; s < 2; s++) {
       const p = list[i + s]; const y = top0 + s * (slotH + gap);
       if (!p) { ctx.strokeStyle = '#D5D9DC'; ctx.setLineDash([10, 8]); ctx.lineWidth = 2; ctx.strokeRect(x, y, w, slotH); ctx.setLineDash([]); continue; }
-      const rows = photoRows(p, i + s + 1);
+      const rows = photoRows(p);
       const th = drawTable(ctx, rows, x, 0, w, { ...opt, measureOnly: true });
       const ph = slotH - th - 10;
       ctx.fillStyle = '#F7F7F6'; ctx.fillRect(x, y, w, ph);
       await drawPhoto(ctx, p, x, y, w, ph);
-      ctx.strokeStyle = '#3A3F44'; ctx.lineWidth = 1.2; ctx.strokeRect(x, y, w, ph);
+      ctx.strokeStyle = '#2E3B33'; ctx.lineWidth = 1.2; ctx.strokeRect(x, y, w, ph);
       drawTable(ctx, rows, x, y + ph + 10, w, opt);
     }
     pages.push(c);
@@ -913,8 +948,9 @@ async function composeA4Pages(insp, list, withCover) {
 function composeCover(insp, n) {
   const c = document.createElement('canvas'); c.width = A4.w; c.height = A4.h; const ctx = c.getContext('2d');
   ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, A4.w, A4.h);
-  ctx.fillStyle = '#1B2024'; ctx.textAlign = 'center'; ctx.font = `700 76px ${FONT_CANVAS}`; ctx.fillText('사 진 대 지', A4.w / 2, 520);
-  ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(360, 570); ctx.lineTo(A4.w - 360, 570); ctx.stroke();
+  ctx.fillStyle = OUT.green; ctx.fillRect(0, 0, A4.w, 40); ctx.fillStyle = OUT.yellow; ctx.fillRect(0, 40, A4.w, 14);
+  ctx.fillStyle = OUT.green; ctx.textAlign = 'center'; ctx.font = `700 76px ${FONT_CANVAS}`; ctx.fillText('사 진 대 지', A4.w / 2, 520);
+  ctx.fillStyle = OUT.yellow; ctx.fillRect(360, 566, A4.w - 720, 8);
   ctx.textAlign = 'left';
   const rows = [['공 사 명', insp.title], ['점 검 일', fmtDate(insp.date)], ['구    분', insp.category || ''], ['점 검 자', insp.inspector || ''], ['사 진 수', `${n}장`]];
   if (insp.note) rows.push(['비    고', insp.note]);
@@ -922,26 +958,28 @@ function composeCover(insp, n) {
   if (settings.company) { ctx.textAlign = 'center'; ctx.font = `600 34px ${FONT_CANVAS}`; ctx.fillText(settings.company, A4.w / 2, A4.h - 220); }
   return c;
 }
-async function composeSingle(insp, p, no) {
-  const W = 1600, m = 40;
-  const opt = { fs: 30, lab: 170, pad: 18, minRow: 62, maxLines: 3 };
+// One photo per image, sized for reading on a phone: the table type is about 4% of the width.
+async function composeSingle(insp, p) {
+  const W = 1200, m = 24, head = 104;
+  const opt = { fs: 44, lab: 170, pad: 20, minRow: 82, maxLines: 4 };
   const mctx = document.createElement('canvas').getContext('2d');
-  const rows = photoRows(p, no);
+  const rows = photoRows(p);
   const th = drawTable(mctx, rows, 0, 0, W - m * 2, { ...opt, measureOnly: true });
   const img = await photoBitmap(p);
-  let pw = W - m * 2, ph = pw * img.height / img.width;
-  if (ph > pw * 1.25) ph = pw * 1.25; // tall photos are letterboxed
-  const head = 64;
-  const H = Math.round(m + head + ph + 16 + th + m);
+  const pw = W - m * 2, ph = Math.min(pw * img.height / img.width, pw * 1.8);
+  const H = Math.round(head + m + ph + 16 + th + m);
   const c = document.createElement('canvas'); c.width = W; c.height = H; const ctx = c.getContext('2d');
   ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, W, H);
-  ctx.fillStyle = '#1B2024'; ctx.font = `700 30px ${FONT_CANVAS}`; ctx.textBaseline = 'alphabetic';
-  ctx.fillText(wrapLines(ctx, insp.title, W - m * 2 - 260, 1)[0], m, m + 34);
-  ctx.font = `400 26px ${FONT_CANVAS}`; ctx.fillStyle = '#3A3F44'; ctx.textAlign = 'right'; ctx.fillText(fmtDate(insp.date), W - m, m + 34); ctx.textAlign = 'left';
-  const y = m + head;
-  ctx.fillStyle = '#F7F7F6'; ctx.fillRect(m, y, pw, ph);
+  ctx.fillStyle = OUT.green; ctx.fillRect(0, 0, W, head - 10); ctx.fillStyle = OUT.yellow; ctx.fillRect(0, head - 10, W, 10);
+  ctx.textBaseline = 'middle'; ctx.font = `400 34px ${FONT_CANVAS}`;
+  const dateW = ctx.measureText(fmtDate(insp.date)).width;
+  ctx.fillStyle = '#FFFFFF'; ctx.font = `700 46px ${FONT_CANVAS}`;
+  ctx.fillText(wrapLines(ctx, insp.title, W - m * 3 - dateW, 1)[0], m, (head - 10) / 2);
+  ctx.font = `500 34px ${FONT_CANVAS}`; ctx.fillStyle = OUT.yellow; ctx.textAlign = 'right'; ctx.fillText(fmtDate(insp.date), W - m, (head - 10) / 2); ctx.textAlign = 'left';
+  const y = head + m;
+  ctx.fillStyle = '#F4F6F2'; ctx.fillRect(m, y, pw, ph);
   await drawPhoto(ctx, p, m, y, pw, ph);
-  ctx.strokeStyle = '#3A3F44'; ctx.lineWidth = 1.5; ctx.strokeRect(m, y, pw, ph);
+  ctx.strokeStyle = '#2E3B33'; ctx.lineWidth = 1.5; ctx.strokeRect(m, y, pw, ph);
   drawTable(ctx, rows, m, y + ph + 16, W - m * 2, opt);
   return c;
 }
@@ -1078,7 +1116,7 @@ async function renderExport() {
 }
 async function buildCanvases(list) {
   if (state.exportMode === 'a4') return composeA4Pages(current, list, state.cover);
-  const out = []; for (let i = 0; i < list.length; i++) out.push(await composeSingle(current, list[i], i + 1)); return out;
+  const out = []; for (let i = 0; i < list.length; i++) out.push(await composeSingle(current, list[i])); return out;
 }
 async function doExport(list) {
   const btn = $('#saveBtn'); btn.disabled = true; const old = btn.innerHTML; btn.textContent = '파일 만드는 중…';

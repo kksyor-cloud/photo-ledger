@@ -1,5 +1,5 @@
 // Offline cache: the app is one page, so cache it and serve cache-first.
-const CACHE = 'photo-ledger-20261014231210';
+const CACHE = 'photo-ledger-20261014232826';
 const FILES = ['./', './index.html', './manifest.webmanifest', './icon.svg', './icon-192.png', './icon-512.png'];
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE).then(c => Promise.all(FILES.map(f => c.add(f).catch(() => {})))).then(() => self.skipWaiting()));
