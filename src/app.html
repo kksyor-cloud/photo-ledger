@@ -415,7 +415,7 @@ function moveMark(m, dx, dy) {
 const FONT_CANVAS = '"IBM Plex Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", "Noto Sans KR", sans-serif';
 
 /* ---------- app state + router ---------- */
-const state = { view: 'home', inspId: null, photoIdx: 0, reorder: false, exportMode: 'a4', cover: false, singleFmt: 'zip' };
+const state = { view: 'home', inspId: null, photoIdx: 0, reorder: false, exportMode: 'single', cover: false, singleFmt: 'jpg' };
 let current = null;   // inspection
 let photos = [];      // ordered photos of current inspection
 
@@ -984,7 +984,7 @@ async function composeSingle(insp, p) {
   return c;
 }
 
-/* ---------- PDF + ZIP writers (no external libraries; works offline) ---------- */
+/* ---------- PDF writer (no external libraries; works offline) ---------- */
 const enc = new TextEncoder();
 async function jpegBytes(canvas, q = 0.86) { return new Uint8Array(await (await canvasToBlob(canvas, 'image/jpeg', q)).arrayBuffer()); }
 async function buildPDF(canvases, pageSize) {
@@ -1011,31 +1011,6 @@ async function buildPDF(canvases, pageSize) {
   push(x); push(`trailer\n<< /Size ${count} /Root 1 0 R >>\nstartxref\n${xref}\n%%EOF`);
   return new Blob(chunks, { type: 'application/pdf' });
 }
-const CRC = (() => { const t = new Uint32Array(256); for (let n = 0; n < 256; n++) { let c = n; for (let k = 0; k < 8; k++) c = c & 1 ? 0xEDB88320 ^ (c >>> 1) : c >>> 1; t[n] = c >>> 0; } return t; })();
-function crc32(u) { let c = 0xFFFFFFFF; for (let i = 0; i < u.length; i++) c = CRC[(c ^ u[i]) & 255] ^ (c >>> 8); return (c ^ 0xFFFFFFFF) >>> 0; }
-function buildZip(files) { // [{name, data:Uint8Array}] stored (no compression; JPEGs don't shrink)
-  const parts = [], central = []; let off = 0;
-  const d = new Date(); const dt = ((d.getHours() << 11) | (d.getMinutes() << 5) | (d.getSeconds() >> 1)), dd = (((d.getFullYear() - 1980) << 9) | ((d.getMonth() + 1) << 5) | d.getDate());
-  for (const f of files) {
-    const name = enc.encode(f.name), crc = crc32(f.data), sz = f.data.length;
-    const h = new DataView(new ArrayBuffer(30));
-    h.setUint32(0, 0x04034b50, true); h.setUint16(4, 20, true); h.setUint16(6, 0x0800, true); h.setUint16(8, 0, true);
-    h.setUint16(10, dt, true); h.setUint16(12, dd, true); h.setUint32(14, crc, true); h.setUint32(18, sz, true); h.setUint32(22, sz, true);
-    h.setUint16(26, name.length, true); h.setUint16(28, 0, true);
-    parts.push(new Uint8Array(h.buffer), name, f.data);
-    const cd = new DataView(new ArrayBuffer(46));
-    cd.setUint32(0, 0x02014b50, true); cd.setUint16(4, 20, true); cd.setUint16(6, 20, true); cd.setUint16(8, 0x0800, true); cd.setUint16(10, 0, true);
-    cd.setUint16(12, dt, true); cd.setUint16(14, dd, true); cd.setUint32(16, crc, true); cd.setUint32(20, sz, true); cd.setUint32(24, sz, true);
-    cd.setUint16(28, name.length, true); cd.setUint32(42, off, true);
-    central.push(new Uint8Array(cd.buffer), name);
-    off += 30 + name.length + sz;
-  }
-  const cdSize = central.reduce((a, b) => a + b.length, 0);
-  const e = new DataView(new ArrayBuffer(22));
-  e.setUint32(0, 0x06054b50, true); e.setUint16(8, files.length, true); e.setUint16(10, files.length, true); e.setUint32(12, cdSize, true); e.setUint32(16, off, true);
-  return new Blob([...parts, ...central, new Uint8Array(e.buffer)], { type: 'application/zip' });
-}
-
 /* ---------- saving files ---------- */
 let dlNs;
 const downloadsNs = () => dlNs ??= (window.claude?.use ? window.claude.use('downloads').catch(() => null) : Promise.resolve(null));
@@ -1052,6 +1027,32 @@ async function saveFileAndroid(blob, filename) {
     $('#aShare', s).onclick = () => { closeSheet(); const r = window.AndroidBridge.shareFile(filename, mime, b64); if (r !== 'ok') toast('보내기 창을 열지 못했습니다.'); };
     $('#aSave', s).onclick = () => { closeSheet(); const r = window.AndroidBridge.saveFile(filename, mime, b64); toast(String(r).startsWith('error:') ? '저장하지 못했습니다. 저장 공간을 확인해 주세요.' : `${r}에 저장했습니다.`, 4000); };
   });
+}
+// Several separate files at once (no zip): Android shares or saves them all; elsewhere each is saved in turn.
+async function saveMany(files) {
+  if (files.length === 1) return saveFile(files[0].blob, files[0].name);
+  if (window.AndroidBridge) {
+    const items = [];
+    for (const f of files) items.push({ name: f.name, mime: f.blob.type || 'application/octet-stream', b64: await blobToBase64(f.blob) });
+    openSheet(`<h2>${files.length}장을 어떻게 할까요?</h2><p>사진마다 파일이 하나씩 따로 만들어집니다.</p>
+      <button class="btn primary" id="mShare">카톡·메일로 보내기 (${files.length}장)</button>
+      <button class="btn" id="mSave">휴대폰에 저장 (다운로드 폴더)</button>
+      <button class="btn" id="mCancel">닫기</button>`, s => {
+      $('#mCancel', s).onclick = closeSheet;
+      $('#mShare', s).onclick = () => { closeSheet(); const r = window.AndroidBridge.shareFiles(JSON.stringify(items)); if (r !== 'ok') toast('보내기 창을 열지 못했습니다.'); };
+      $('#mSave', s).onclick = () => {
+        closeSheet(); let ok = 0, where = '';
+        for (const it of items) { const r = String(window.AndroidBridge.saveFile(it.name, it.mime, it.b64)); if (!r.startsWith('error:')) { ok++; where = r; } }
+        toast(ok === items.length ? `${ok}장을 ${where}에 저장했습니다.` : `${items.length}장 중 ${ok}장만 저장했습니다.`, 4000);
+      };
+    });
+    return;
+  }
+  const list = files.map(f => new File([f.blob], f.name, { type: f.blob.type }));
+  if (navigator.canShare && navigator.share && /Android|iPhone|iPad/i.test(navigator.userAgent) && navigator.canShare({ files: list })) {
+    try { await navigator.share({ files: list }); return; } catch (e) { if (e.name === 'AbortError') return; }
+  }
+  for (const f of files) await saveFile(f.blob, f.name);
 }
 async function saveFile(blob, filename) {
   if (window.AndroidBridge) return saveFileAndroid(blob, filename);
@@ -1083,12 +1084,12 @@ async function renderExport() {
     <section class="panel">
       <span class="eyebrow">양식</span>
       <div class="choice">
+        <button data-mode="single" aria-pressed="${state.exportMode === 'single'}"><b>건별 발행</b><span>사진마다 파일 한 개. 카톡·메일 공유용</span></button>
         <button data-mode="a4" aria-pressed="${state.exportMode === 'a4'}"><b>A4 2장 구성</b><span>A4 세로 1매에 사진 2장. 인쇄·제출용 PDF</span></button>
-        <button data-mode="single" aria-pressed="${state.exportMode === 'single'}"><b>사진 1장 단위</b><span>사진마다 한 장. 카톡·메일 공유용</span></button>
       </div>
       ${state.exportMode === 'a4'
         ? `<label class="check"><input type="checkbox" id="cover" ${state.cover ? 'checked' : ''}> 표지 넣기</label>`
-        : `<div class="seg" role="group" aria-label="파일 형식"><button data-fmt="zip" aria-pressed="${state.singleFmt === 'zip'}">JPG 묶음(zip)</button><button data-fmt="pdf" aria-pressed="${state.singleFmt === 'pdf'}">PDF (1면 1장)</button></div>`}
+        : `<div class="seg" role="group" aria-label="파일 형식"><button data-fmt="jpg" aria-pressed="${state.singleFmt === 'jpg'}">JPG</button><button data-fmt="pdf" aria-pressed="${state.singleFmt === 'pdf'}">PDF</button></div><div class="meta-line">사진마다 파일이 하나씩 따로 만들어집니다. 아래 미리보기에서 한 장씩 발행할 수도 있습니다.</div>`}
       <div class="meta-line">출력할 사진 ${list.length}장${photos.length - list.length ? ` (제외 ${photos.length - list.length}장)` : ''}${state.exportMode === 'a4' ? ` · ${Math.ceil(list.length / 2) + (state.cover ? 1 : 0)}매` : ''}</div>
       ${miss ? `<div class="banner">설명이 비어 있는 사진이 ${miss}장 있습니다. 그대로 출력하면 빈 칸으로 나옵니다.</div>` : ''}
     </section>
@@ -1098,7 +1099,7 @@ async function renderExport() {
   v.querySelectorAll('[data-mode]').forEach(b => b.onclick = () => { state.exportMode = b.dataset.mode; renderExport(); });
   v.querySelectorAll('[data-fmt]').forEach(b => b.onclick = () => { state.singleFmt = b.dataset.fmt; renderExport(); });
   const cv = $('#cover'); if (cv) cv.onchange = e => { state.cover = e.target.checked; renderExport(); };
-  const label = state.exportMode === 'a4' ? 'PDF 저장' : state.singleFmt === 'zip' ? 'JPG 묶음 저장' : 'PDF 저장';
+  const label = state.exportMode === 'a4' ? 'PDF 저장' : `${list.length}장 모두 발행 (${state.singleFmt.toUpperCase()})`;
   setActions(`<button class="btn primary grow" id="saveBtn" ${list.length ? '' : 'disabled'}>${svg('print')}${label}</button>`);
   $('#saveBtn').onclick = () => doExport(list);
   if (!list.length) { $('#pages').innerHTML = '<span class="meta-line">출력에 포함된 사진이 없습니다.</span>'; return; }
@@ -1111,6 +1112,12 @@ async function renderExport() {
     const b = await canvasToBlob(canvases[i], 'image/jpeg', 0.7); const u = URL.createObjectURL(b); previewURLs.push(u);
     const fig = document.createElement('figure'); fig.style.margin = '0'; fig.style.display = 'grid'; fig.style.gap = '6px'; fig.style.justifyItems = 'center'; fig.style.width = '100%';
     fig.innerHTML = `<img src="${u}" alt="${i + 1}쪽 미리보기"><figcaption class="cap">${i + 1} / ${canvases.length}</figcaption>`;
+    if (myMode === 'single') {
+      const btn = document.createElement('button'); btn.className = 'btn primary small'; btn.innerHTML = `${svg('send')}이 장 발행`;
+      const c = canvases[i], ph = list[i], no = i + 1;
+      btn.onclick = async () => { const f = await singleFile(c, ph, no); await saveFile(f.blob, f.name); };
+      fig.appendChild(btn);
+    }
     pg.appendChild(fig);
   }
 }
@@ -1118,17 +1125,21 @@ async function buildCanvases(list) {
   if (state.exportMode === 'a4') return composeA4Pages(current, list, state.cover);
   const out = []; for (let i = 0; i < list.length; i++) out.push(await composeSingle(current, list[i])); return out;
 }
+// One finished file per photo (건별 발행): JPG or PDF, named by date, number and location.
+async function singleFile(canvas, p, no) {
+  const base = `사진대지_${current.date}_${String(no).padStart(2, '0')}${p.fields.loc ? '_' + safeName(p.fields.loc) : ''}`;
+  if (state.singleFmt === 'pdf') return { blob: await buildPDF([canvas], null), name: `${base}.pdf` };
+  return { blob: await canvasToBlob(canvas, 'image/jpeg', 0.9), name: `${base}.jpg` };
+}
 async function doExport(list) {
   const btn = $('#saveBtn'); btn.disabled = true; const old = btn.innerHTML; btn.textContent = '파일 만드는 중…';
   try {
-    const base = `사진대지_${safeName(current.title)}_${current.date}`;
     const canvases = await buildCanvases(list);
-    if (state.exportMode === 'a4') await saveFile(await buildPDF(canvases, [595.28, 841.89]), `${base}.pdf`);
-    else if (state.singleFmt === 'pdf') await saveFile(await buildPDF(canvases, null), `${base}_1장단위.pdf`);
+    if (state.exportMode === 'a4') await saveFile(await buildPDF(canvases, [595.28, 841.89]), `사진대지_${safeName(current.title)}_${current.date}.pdf`);
     else {
       const files = [];
-      for (let i = 0; i < canvases.length; i++) files.push({ name: `${String(i + 1).padStart(2, '0')}_${safeName(list[i].fields.loc || '사진')}.jpg`, data: await jpegBytes(canvases[i], 0.9) });
-      await saveFile(buildZip(files), `${base}_JPG.zip`);
+      for (let i = 0; i < canvases.length; i++) files.push(await singleFile(canvases[i], list[i], i + 1));
+      await saveMany(files);
     }
   } catch (e) { console.error(e); toast('파일을 만들지 못했습니다. 사진 수를 줄여 다시 시도해 주세요.'); }
   finally { btn.disabled = false; btn.innerHTML = old; }

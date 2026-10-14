@@ -26,6 +26,7 @@ import android.webkit.WebViewClient;
 import androidx.core.content.FileProvider;
 import androidx.webkit.WebViewAssetLoader;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.File;
@@ -257,6 +258,37 @@ public class MainActivity extends Activity {
                 Intent send = new Intent(Intent.ACTION_SEND);
                 send.setType(mime);
                 send.putExtra(Intent.EXTRA_STREAM, uri);
+                send.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                runOnUiThread(() -> startActivity(Intent.createChooser(send, "보내기")));
+                return "ok";
+            } catch (Exception e) {
+                return "error:" + e.getMessage();
+            }
+        }
+
+        /** Shares several separate files in one go. json = [{name, mime, b64}, …]. */
+        @JavascriptInterface
+        public String shareFiles(String json) {
+            try {
+                JSONArray items = new JSONArray(json);
+                File dir = new File(getCacheDir(), "share");
+                //noinspection ResultOfMethodCallIgnored
+                dir.mkdirs();
+                ArrayList<Uri> uris = new ArrayList<>();
+                boolean allImages = true;
+                for (int k = 0; k < items.length(); k++) {
+                    JSONObject it = items.getJSONObject(k);
+                    String mime = it.optString("mime", "application/octet-stream");
+                    if (!mime.startsWith("image/")) allImages = false;
+                    File f = new File(dir, safeName(it.getString("name")));
+                    try (FileOutputStream out = new FileOutputStream(f)) {
+                        out.write(Base64.decode(it.getString("b64"), Base64.DEFAULT));
+                    }
+                    uris.add(FileProvider.getUriForFile(MainActivity.this, getPackageName() + ".files", f));
+                }
+                Intent send = new Intent(Intent.ACTION_SEND_MULTIPLE);
+                send.setType(allImages ? "image/jpeg" : "*/*");
+                send.putParcelableArrayListExtra(Intent.EXTRA_STREAM, uris);
                 send.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
                 runOnUiThread(() -> startActivity(Intent.createChooser(send, "보내기")));
                 return "ok";

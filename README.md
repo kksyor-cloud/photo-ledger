@@ -1,11 +1,11 @@
 # 현장 사진대지 (웹앱 MVP)
 
 건설 현장 점검 사진을 찍고, 사진 위에 표시하고, 하단에 위치·내용·조치를 입력해
-사진 1장 단위(JPG 묶음/PDF) 또는 A4 1매 2장 구성 PDF로 출력하는 앱입니다.
+사진마다 한 장씩(건별 JPG/PDF) 또는 A4 1매 2장 구성 PDF로 발행하는 앱입니다.
 앱 주소: https://kksyor-cloud.github.io/photo-ledger/
 
 ## 구성
-- `src/app.html` — 앱 전체(화면, 저장, 마킹, 음성 입력, PDF/ZIP 생성). 외부 라이브러리 없음.
+- `src/app.html` — 앱 전체(화면, 저장, 마킹, 음성 입력, JPG/PDF 생성). 외부 라이브러리 없음.
 - `src/sw.js`, `src/manifest.webmanifest`, `src/icon*` — 오프라인 동작과 홈 화면 설치용.
 - `build.sh` — `docs/`에 설치형 웹앱(PWA)을 만듭니다: `sh build.sh` (GitHub Pages가 `docs/`를 그대로 서비스)
 - `docs/` — 빌드 결과물. 앱 주소: https://kksyor-cloud.github.io/photo-ledger/
