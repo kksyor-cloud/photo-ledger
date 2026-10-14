@@ -1,0 +1,54 @@
+plugins {
+    id 'com.android.application'
+}
+
+// CI sets GITHUB_RUN_NUMBER so every build installs over the previous one.
+def buildNo = (System.getenv('GITHUB_RUN_NUMBER') ?: '1').toInteger()
+
+android {
+    namespace 'com.kksyor.photoledger'
+    compileSdk 34
+
+    defaultConfig {
+        applicationId 'com.kksyor.photoledger'
+        minSdk 24
+        targetSdk 34
+        versionCode buildNo
+        versionName "1.0.${buildNo}"
+    }
+
+    // One fixed key so updates install over earlier versions. Personal sideload key, not a Play Store key.
+    signingConfigs {
+        shared {
+            storeFile file('photo-ledger.keystore')
+            storePassword 'photoledger'
+            keyAlias 'photoledger'
+            keyPassword 'photoledger'
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            signingConfig signingConfigs.shared
+        }
+        debug {
+            signingConfig signingConfigs.shared
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+
+    lint {
+        checkReleaseBuilds false
+        abortOnError false
+    }
+}
+
+dependencies {
+    implementation 'androidx.webkit:webkit:1.11.0'
+    implementation 'androidx.core:core:1.13.1'
+}

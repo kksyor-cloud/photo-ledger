@@ -1,0 +1,49 @@
+name: Android APK
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.10.2'
+
+      - name: Bundle the web app into the Android assets
+        run: TARGET=android OUT=android/app/src/main/assets/www sh build.sh
+
+      - name: Build APK
+        run: gradle -p android assembleRelease --no-daemon --stacktrace
+
+      - name: Name the APK
+        run: cp android/app/build/outputs/apk/release/app-release.apk photo-ledger.apk
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: photo-ledger-apk
+          path: photo-ledger.apk
+
+      - name: Publish as the latest release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v1.0.${{ github.run_number }}
+          name: 사진대지 1.0.${{ github.run_number }}
+          files: photo-ledger.apk
+          make_latest: true
+          body: |
+            휴대폰에서 아래 photo-ledger.apk를 눌러 받은 뒤 설치하세요.
+            처음 설치할 때 "출처를 알 수 없는 앱 설치"를 허용해야 할 수 있습니다.

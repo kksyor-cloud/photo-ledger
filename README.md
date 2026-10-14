@@ -19,3 +19,8 @@
 
 ## 로컬 실행
     sh build.sh && cd docs && python3 -m http.server 8000
+
+## 안드로이드 APK
+- `android/` — 위 웹앱을 WebView로 감싼 안드로이드 앱. 카메라·갤러리, 한국어 음성 입력(구글 음성 인식 창), 다운로드 폴더 저장과 카톡·메일 공유를 휴대폰 기능으로 연결합니다.
+- main 브랜치에 올릴 때마다 GitHub Actions(`.github/workflows/android.yml`)가 APK를 만들어 [Releases](https://github.com/kksyor-cloud/photo-ledger/releases/latest)에 `photo-ledger.apk`로 올립니다.
+- 서명 키(`android/app/photo-ledger.keystore`)는 개인 설치용입니다. 같은 키로 서명되어 새 버전이 기존 앱 위에 그대로 설치됩니다. Play 스토어에 올릴 때는 별도 키를 만들어야 합니다.

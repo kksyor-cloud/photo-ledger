@@ -779,10 +779,24 @@ document.addEventListener('visibilitychange', () => { if (document.hidden && ed.
 
 /* ---------- voice input ---------- */
 let rec = null, recBtn = null;
+// Android app: the native speech dialog returns its text here.
+window.__onNativeVoice = (k, text) => {
+  const t = state.view === 'edit' && $(`#f_${k}`); if (!t || !text) return;
+  t.value = t.value.trim() ? `${t.value.trim()} ${text}` : text;
+  photos[state.photoIdx].fields[k] = t.value; queueSave();
+};
+window.__onNativeVoiceError = () => toast('이 휴대폰에서는 음성 인식을 쓸 수 없습니다. 키보드의 마이크 버튼을 써 주세요.', 5000);
+// Android back button: close a sheet, else go back a screen; false lets the app close.
+window.__onBack = () => {
+  if ($('#scrim')) { closeSheet(); return true; }
+  const b = $('#backBtn'); if (b) { b.click(); return true; }
+  return false;
+};
 function stopVoice() { if (rec) { try { rec.stop(); } catch (e) {} } rec = null; if (recBtn) recBtn.classList.remove('on'); recBtn = null; }
 function toggleVoice(k, btn) {
   if (rec && recBtn === btn) { stopVoice(); return; }
   stopVoice();
+  if (window.AndroidBridge) { window.AndroidBridge.startVoice(k); return; }
   const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
   const fallback = '여기서는 음성 인식을 바로 쓸 수 없습니다. 입력칸을 누른 뒤 키보드의 마이크 버튼으로 말하면 글자로 들어갑니다.';
   if (!SR) { $(`#f_${k}`).focus(); toast(fallback, 5000); return; }
@@ -987,7 +1001,22 @@ function buildZip(files) { // [{name, data:Uint8Array}] stored (no compression; 
 /* ---------- saving files ---------- */
 let dlNs;
 const downloadsNs = () => dlNs ??= (window.claude?.use ? window.claude.use('downloads').catch(() => null) : Promise.resolve(null));
+function blobToBase64(blob) {
+  return new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(String(r.result).split(',')[1]); r.onerror = rej; r.readAsDataURL(blob); });
+}
+async function saveFileAndroid(blob, filename) {
+  const b64 = await blobToBase64(blob); const mime = blob.type || 'application/octet-stream';
+  openSheet(`<h2>파일을 어떻게 할까요?</h2><p>${esc(filename)}</p>
+    <button class="btn primary" id="aShare">카톡·메일로 보내기</button>
+    <button class="btn" id="aSave">휴대폰에 저장 (다운로드 폴더)</button>
+    <button class="btn" id="aCancel">닫기</button>`, s => {
+    $('#aCancel', s).onclick = closeSheet;
+    $('#aShare', s).onclick = () => { closeSheet(); const r = window.AndroidBridge.shareFile(filename, mime, b64); if (r !== 'ok') toast('보내기 창을 열지 못했습니다.'); };
+    $('#aSave', s).onclick = () => { closeSheet(); const r = window.AndroidBridge.saveFile(filename, mime, b64); toast(String(r).startsWith('error:') ? '저장하지 못했습니다. 저장 공간을 확인해 주세요.' : `${r}에 저장했습니다.`, 4000); };
+  });
+}
 async function saveFile(blob, filename) {
+  if (window.AndroidBridge) return saveFileAndroid(blob, filename);
   const ns = await downloadsNs();
   if (ns) {
     try { await ns.save({ filename, data: blob }); toast('저장했습니다.'); }

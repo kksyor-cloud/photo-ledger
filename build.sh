@@ -1,5 +1,6 @@
 #!/bin/sh
 # Builds the installable web app (PWA) into docs/ (served by GitHub Pages) from src/app.html.
+# TARGET=android OUT=android/app/src/main/assets/www sh build.sh  -> copy bundled into the Android app.
 set -e
 cd "$(dirname "$0")"
 mkdir -p "${OUT:-docs}"
@@ -10,7 +11,11 @@ mkdir -p "${OUT:-docs}"
   printf '<link rel="icon" href="icon.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="icon-192.png">'
   printf '<meta name="apple-mobile-web-app-capable" content="yes">'
   printf '<style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,sans-serif}img{max-width:100%%}[hidden]{display:none!important}</style>'
-  printf '<script>window.__PWA__=true</script></head><body>'
+  if [ "$TARGET" = android ]; then
+    printf '<script>window.__ANDROID__=true</script></head><body>'
+  else
+    printf '<script>window.__PWA__=true</script></head><body>'
+  fi
   cat src/app.html
   printf '</body></html>\n'
 } > "${OUT:-docs}/index.html"
