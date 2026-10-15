@@ -1,40 +1,37 @@
-<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#F2B705"><link rel="manifest" href="manifest.webmanifest"><link rel="icon" href="icon.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style><script>window.__PWA__=true</script></head><body><title>현장 사진대지</title>
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#FFC400"><link rel="manifest" href="manifest.webmanifest"><link rel="icon" href="icon.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style><script>window.__PWA__=true</script></head><body><title>현장 사진대지</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&display=swap">
 <style>
-/* Layout: one-column field tool, green top bar with a yellow safety band, thumb-reachable action bar fixed to the bottom */
+/* Layout: one-column field tool. Safety-yellow top bar with a hazard stripe, today's photos first and past days below, capture bar fixed to the bottom */
 :root {
-  --bg: #F3F6F1;         /* pale site-office green-grey */
+  --bg: #FFFAE6;         /* pale safety yellow paper */
   --surface: #FFFFFF;
-  --sunk: #E4EBE4;
-  --ink: #15241B;
-  --muted: #56685C;
-  --line: #CCD8CE;
-  --accent: #FFC400;     /* safety yellow: the one action that matters on each screen */
-  --on-accent: #15241B;
-  --green: #12753B;      /* safety green: brand bar, selections */
-  --on-green: #FFFFFF;
-  --green-soft: #E3F2E8;
-  --mark: #E0322B;       /* marking red, also the "missing" signal */
-  --ok: #2E8A57;
-  --warn: #B86E00;
-  --scrim: rgba(17, 21, 24, .48);
+  --sunk: #F4EDD2;
+  --ink: #17150F;
+  --muted: #6B6250;
+  --line: #E6DCB6;
+  --yellow: #FFC400;     /* brand bar, date blocks, highlights */
+  --soft: #FFF2BF;
+  --primary: #17150F;    /* the one action on each screen: black with yellow type */
+  --on-primary: #FFC400;
+  --mark: #D9312A;       /* marking red, also the "missing" signal */
+  --ok: #1F7A3D;
+  --warn: #9A5C00;
+  --scrim: rgba(23, 21, 15, .5);
   --font: "IBM Plex Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", "Noto Sans KR", system-ui, sans-serif;
   --r: 10px;
   --bar-h: 64px;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --bg: #101713; --surface: #18221B; --sunk: #233027; --ink: #E9F1EB; --muted: #98AB9E;
-    --line: #2E3D33; --accent: #FFCB2E; --on-accent: #101713; --green: #1E9A52; --on-green: #FFFFFF; --green-soft: #183A26; --mark: #FF5A4F; --ok: #4CB97A; --warn: #E7A33A;
-    --scrim: rgba(0, 0, 0, .6); color-scheme: dark;
+    --bg: #13120E; --surface: #1D1B15; --sunk: #29261D; --ink: #F6F1E1; --muted: #B4AA8E; --line: #3A3527; --soft: #3A3112;
+    --primary: #FFC400; --on-primary: #17150F; --mark: #FF5A4F; --ok: #4CB97A; --warn: #E7A33A; --scrim: rgba(0, 0, 0, .62); color-scheme: dark;
   }
 }
 :root[data-theme="dark"] {
-  --bg: #101713; --surface: #18221B; --sunk: #233027; --ink: #E9F1EB; --muted: #98AB9E;
-  --line: #2E3D33; --accent: #FFCB2E; --on-accent: #101713; --green: #1E9A52; --on-green: #FFFFFF; --green-soft: #183A26; --mark: #FF5A4F; --ok: #4CB97A; --warn: #E7A33A;
-  --scrim: rgba(0, 0, 0, .6); color-scheme: dark;
+  --bg: #13120E; --surface: #1D1B15; --sunk: #29261D; --ink: #F6F1E1; --muted: #B4AA8E; --line: #3A3527; --soft: #3A3112;
+  --primary: #FFC400; --on-primary: #17150F; --mark: #FF5A4F; --ok: #4CB97A; --warn: #E7A33A; --scrim: rgba(0, 0, 0, .62); color-scheme: dark;
 }
 * { box-sizing: border-box; }
 html, body { height: 100%; }
@@ -44,23 +41,26 @@ body {
 }
 button, input, select, textarea { font: inherit; color: inherit; }
 button { cursor: pointer; }
-:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+:focus-visible { outline: 3px solid var(--primary); outline-offset: 2px; }
 .gutter { padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
 
-/* top bar */
+/* top bar: always safety yellow, black type, hazard stripe underneath */
 .topbar {
-  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20; background: var(--green); color: var(--on-green);
-  border-bottom: 5px solid var(--accent); display: flex; align-items: center; gap: 8px; min-height: 56px;
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20; background: #FFC400; color: #17150F;
+  display: flex; align-items: center; gap: 6px; min-height: 60px; padding-bottom: 8px;
 }
-.topbar h1 { font-size: 18px; font-weight: 700; margin: 0; flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-wrap: balance; }
+.topbar::after { content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 8px; background: repeating-linear-gradient(-45deg, #17150F 0 9px, #FFC400 9px 18px); }
+.topbar .ttl { flex: 1; min-width: 0; display: grid; padding-block: 6px; }
+.topbar h1 { font-size: 19px; font-weight: 700; margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.25; }
+.topbar small { font-size: 12.5px; font-weight: 600; opacity: .72; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .iconbtn {
-  width: 44px; height: 44px; border-radius: 22px; border: 0; background: transparent; display: grid; place-items: center; flex: none;
+  width: 44px; height: 44px; border-radius: 22px; border: 0; background: transparent; display: grid; place-items: center; flex: none; color: inherit;
 }
-.iconbtn:active { background: rgba(255,255,255,.18); }
-.iconbtn:disabled { opacity: .4; }
-.iconbtn svg { width: 24px; height: 24px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.iconbtn:active { background: rgba(0,0,0,.1); }
+.iconbtn:disabled { opacity: .35; }
+.iconbtn svg { width: 24px; height: 24px; stroke: currentColor; fill: none; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
 
-main { padding-block: 16px calc(var(--bar-h) + 32px + env(safe-area-inset-bottom, 0px)); max-width: 760px; margin: 0 auto; display: grid; gap: 16px; }
+main { padding-block: 16px calc(var(--bar-h) + 32px + env(safe-area-inset-bottom, 0px)); max-width: 760px; margin: 0 auto; display: grid; gap: 14px; }
 
 /* bottom action bar */
 .actionbar {
@@ -70,53 +70,58 @@ main { padding-block: 16px calc(var(--bar-h) + 32px + env(safe-area-inset-bottom
 }
 .actionbar > .inner { display: flex; gap: 8px; width: 100%; max-width: 760px; }
 .btn {
-  min-height: 48px; border-radius: var(--r); border: 1px solid var(--line); background: var(--surface); padding: 0 16px;
-  font-weight: 600; display: inline-flex; align-items: center; justify-content: center; gap: 8px; white-space: nowrap;
+  min-height: 52px; border-radius: var(--r); border: 1.5px solid var(--line); background: var(--surface); padding: 0 16px;
+  font-weight: 700; display: inline-flex; align-items: center; justify-content: center; gap: 8px; white-space: nowrap; font-size: 16px;
 }
-.btn svg { width: 20px; height: 20px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
-.btn.primary { background: var(--accent); color: var(--on-accent); border-color: color-mix(in srgb, var(--accent) 70%, #000); box-shadow: inset 0 -3px 0 rgba(0,0,0,.12); }
-.btn.go { background: var(--green); color: var(--on-green); border-color: var(--green); }
+.btn svg { width: 22px; height: 22px; stroke: currentColor; fill: none; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+.btn.primary { background: var(--primary); color: var(--on-primary); border-color: var(--primary); }
+.btn.yellow { background: #FFC400; color: #17150F; border-color: #E0A800; }
 .btn.danger { color: var(--mark); }
 .btn.grow { flex: 1; }
 .btn:disabled { opacity: .45; cursor: default; }
 .btn.small { min-height: 36px; padding: 0 12px; font-size: 14px; }
 
-/* home list */
-.eyebrow { font-size: 12.5px; letter-spacing: .06em; color: var(--green); font-weight: 700; }
-.cards { display: grid; gap: 10px; }
-.card {
-  background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 14px 8px 14px 16px;
-  display: flex; gap: 12px; align-items: center; text-align: left; width: 100%;
-}
-.card .body { flex: 1; min-width: 0; display: grid; gap: 4px; }
-.card .title { font-weight: 600; font-size: 16px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.card .meta { color: var(--muted); font-size: 13px; display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
-.chip { display: inline-flex; align-items: center; gap: 4px; font-size: 12px; font-weight: 600; padding: 2px 8px; border-radius: 99px; background: var(--sunk); color: var(--muted); }
-.chip.warn { color: var(--mark); background: color-mix(in srgb, var(--mark) 12%, transparent); }
-.chip.ok { color: var(--green); background: var(--green-soft); }
-.chip.sample { color: var(--warn); background: color-mix(in srgb, var(--warn) 14%, transparent); }
-.thumbstrip { width: 56px; height: 56px; border-radius: 8px; border: 0; padding: 0; background: var(--sunk) center/cover no-repeat; flex: none; }
-.empty { text-align: center; color: var(--muted); padding: 40px 16px; display: grid; gap: 12px; justify-items: center; }
-
-/* inspection header */
-.infobox { background: var(--green-soft); border: 1px solid color-mix(in srgb, var(--green) 25%, transparent); border-radius: var(--r); padding: 14px 16px; display: grid; gap: 6px; }
-.infobox dl { margin: 0; display: grid; grid-template-columns: auto 1fr; gap: 2px 14px; font-size: 14px; }
-.infobox dt { color: var(--muted); }
-.infobox dd { margin: 0; min-width: 0; overflow-wrap: anywhere; }
+/* section labels */
+.eyebrow { font-size: 13px; font-weight: 700; color: var(--muted); display: flex; align-items: center; gap: 8px; }
+.eyebrow::before { content: ''; width: 10px; height: 10px; background: #FFC400; border: 2px solid var(--ink); border-radius: 2px; }
 .row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
 .row.between { justify-content: space-between; }
+.chip { display: inline-flex; align-items: center; gap: 4px; font-size: 12.5px; font-weight: 700; padding: 2px 9px; border-radius: 99px; background: var(--sunk); color: var(--muted); }
+.chip.warn { color: var(--mark); background: color-mix(in srgb, var(--mark) 12%, transparent); }
+.chip.ok { color: var(--ok); background: color-mix(in srgb, var(--ok) 13%, transparent); }
+.chip.sample { color: var(--warn); background: color-mix(in srgb, var(--warn) 15%, transparent); }
+.empty { text-align: center; color: var(--muted); padding: 28px 12px; display: grid; gap: 8px; justify-items: center; }
+.banner { background: var(--soft); border: 1px solid color-mix(in srgb, var(--warn) 40%, transparent); border-radius: var(--r); padding: 10px 12px; font-size: 13.5px; }
+
+/* today card */
+.today { background: var(--surface); border: 1px solid var(--line); border-top: 6px solid #FFC400; border-radius: var(--r); padding: 14px 14px 16px; display: grid; gap: 12px; }
+.today .when { font-size: 23px; font-weight: 700; line-height: 1.2; text-wrap: balance; }
+.today .label { font-size: 13px; font-weight: 700; color: var(--muted); }
+
+/* past days */
+.days { display: grid; gap: 8px; }
+.daycard { display: flex; align-items: center; gap: 12px; background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 10px; width: 100%; text-align: left; }
+.datebox { width: 56px; height: 56px; border-radius: 8px; background: #FFC400; color: #17150F; display: grid; place-items: center; align-content: center; line-height: 1.05; flex: none; }
+.datebox b { font-size: 23px; }
+.datebox span { font-size: 12px; font-weight: 700; }
+.daycard .body { flex: 1; min-width: 0; display: grid; gap: 5px; }
+.daycard .title { font-weight: 700; font-size: 15.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.daycard .meta { display: flex; gap: 5px; flex-wrap: wrap; }
+.minithumbs { display: flex; gap: 4px; flex: none; }
+.minithumbs img { width: 40px; height: 40px; border-radius: 6px; object-fit: cover; background: var(--sunk); display: block; }
+@media (max-width: 400px) { .minithumbs img:nth-child(n+3) { display: none; } }
+.month { margin-top: 6px; }
 
 /* photo grid */
 .grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
 @media (min-width: 560px) { .grid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
 .tile { position: relative; aspect-ratio: 1; border-radius: 8px; overflow: hidden; background: var(--sunk); border: 0; padding: 0; max-width: 100%; }
 .tile img { width: 100%; height: 100%; object-fit: cover; display: block; }
-.tile .no { position: absolute; left: 6px; top: 6px; background: rgba(0,0,0,.62); color: #fff; font-size: 12px; font-weight: 700; padding: 1px 7px; border-radius: 99px; }
-.tile .flag { position: absolute; right: 6px; top: 6px; background: var(--mark); color: #fff; font-size: 11px; font-weight: 700; padding: 1px 6px; border-radius: 99px; }
-.tile.excluded img { opacity: .35; }
-.tile .ex { position: absolute; inset: auto 0 0 0; background: rgba(0,0,0,.6); color: #fff; font-size: 11px; padding: 2px; text-align: center; }
+.tile .time { position: absolute; left: 5px; bottom: 5px; background: rgba(0,0,0,.66); color: #fff; font-size: 12px; font-weight: 700; padding: 1px 7px; border-radius: 99px; }
+.tile .flag { position: absolute; right: 5px; top: 5px; background: var(--mark); color: #fff; font-size: 11px; font-weight: 700; padding: 1px 6px; border-radius: 99px; }
+.tile .pub { position: absolute; left: 5px; top: 5px; background: #17150F; color: #FFC400; font-size: 11px; font-weight: 700; padding: 1px 7px; border-radius: 99px; }
 .tile .reorder { position: absolute; inset: auto 4px 4px 4px; display: flex; justify-content: space-between; }
-.tile .reorder button { width: 36px; height: 32px; border-radius: 8px; border: 0; background: rgba(255,255,255,.92); color: #1B2024; font-weight: 700; }
+.tile .reorder button { width: 36px; height: 32px; border-radius: 8px; border: 0; background: rgba(255,255,255,.94); color: #17150F; font-weight: 700; }
 
 /* editor */
 .stage { position: relative; background: #111; border-radius: var(--r); overflow: hidden; touch-action: none; user-select: none; -webkit-user-select: none; }
@@ -124,62 +129,52 @@ main { padding-block: 16px calc(var(--bar-h) + 32px + env(safe-area-inset-bottom
 .tools { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 2px; scrollbar-width: none; }
 .tools::-webkit-scrollbar { display: none; }
 .tool {
-  flex: none; min-width: 52px; height: 52px; border-radius: var(--r); border: 1px solid var(--line); background: var(--surface);
+  flex: none; min-width: 52px; height: 52px; border-radius: var(--r); border: 1.5px solid var(--line); background: var(--surface);
   display: grid; place-items: center; font-size: 11px; gap: 0; padding: 4px 6px; line-height: 1.1;
 }
 .tool svg { width: 22px; height: 22px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
-.tool[aria-pressed="true"] { background: var(--green); color: var(--on-green); border-color: var(--green); }
+.tool[aria-pressed="true"] { background: var(--primary); color: var(--on-primary); border-color: var(--primary); }
 .swatches { display: flex; gap: 8px; align-items: center; }
 .swatch { width: 34px; height: 34px; border-radius: 17px; border: 2px solid var(--line); }
-.swatch[aria-pressed="true"] { outline: 3px solid var(--green); outline-offset: 2px; }
-.seg { display: inline-flex; border: 1px solid var(--line); border-radius: var(--r); overflow: hidden; }
+.swatch[aria-pressed="true"] { outline: 3px solid var(--ink); outline-offset: 2px; }
+.seg { display: inline-flex; border: 1.5px solid var(--line); border-radius: var(--r); overflow: hidden; }
 .seg button { border: 0; background: var(--surface); min-height: 36px; padding: 0 12px; font-size: 13px; }
-.seg button[aria-pressed="true"] { background: var(--green); color: var(--on-green); }
+.seg button[aria-pressed="true"] { background: var(--primary); color: var(--on-primary); font-weight: 700; }
 .fields { display: grid; gap: 12px; }
 .field { display: grid; gap: 6px; }
-.field label { font-size: 14px; font-weight: 700; color: var(--green); display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.field label { font-size: 14px; font-weight: 700; display: flex; justify-content: space-between; align-items: center; gap: 8px; }
 .inputwrap { display: flex; gap: 8px; align-items: stretch; }
 .inputwrap textarea, .inputwrap input { flex: 1; min-width: 0; }
 textarea, input[type=text], input[type=date], select {
-  width: 100%; border: 1px solid var(--line); border-radius: var(--r); background: var(--surface); padding: 10px 12px; min-height: 48px; font-size: 16px;
+  width: 100%; border: 1.5px solid var(--line); border-radius: var(--r); background: var(--surface); padding: 10px 12px; min-height: 48px; font-size: 16px;
 }
+textarea:focus, input:focus { border-color: #E0A800; outline: 3px solid color-mix(in srgb, #FFC400 45%, transparent); outline-offset: 0; }
 textarea { resize: vertical; min-height: 56px; }
-.mic { width: 52px; color: var(--green); flex: none; border-radius: var(--r); border: 1px solid var(--line); background: var(--surface); display: grid; place-items: center; }
-.mic svg { width: 22px; height: 22px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.mic { width: 52px; flex: none; border-radius: var(--r); border: 1.5px solid #E0A800; background: #FFC400; color: #17150F; display: grid; place-items: center; }
+.mic svg { width: 22px; height: 22px; stroke: currentColor; fill: none; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
 .mic.on { background: var(--mark); color: #fff; border-color: var(--mark); animation: pulse 1.2s ease-in-out infinite; }
 @keyframes pulse { 50% { box-shadow: 0 0 0 6px color-mix(in srgb, var(--mark) 30%, transparent); } }
 @media (prefers-reduced-motion: reduce) { .mic.on { animation: none; } }
 .phrases { display: flex; gap: 6px; flex-wrap: wrap; }
-.phrases button { border: 1px solid var(--line); background: var(--sunk); border-radius: 99px; padding: 6px 12px; font-size: 13px; }
+.phrases button { border: 1px solid var(--line); background: var(--soft); border-radius: 99px; padding: 6px 12px; font-size: 13px; }
 .linkbtn { border: 0; background: none; color: var(--ink); text-decoration: underline; text-underline-offset: 3px; font-size: 13px; padding: 4px 0; }
 .meta-line { color: var(--muted); font-size: 12.5px; }
-
-/* export */
 .panel { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 14px 16px; display: grid; gap: 12px; }
-.choice { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
-.choice button { border: 2px solid var(--line); background: var(--surface); border-radius: var(--r); padding: 12px; text-align: left; display: grid; gap: 4px; }
-.choice button b { font-size: 15px; }
-.choice button span { font-size: 12.5px; color: var(--muted); }
-.choice button[aria-pressed="true"] { border-color: var(--green); background: var(--green-soft); }
 .check { display: flex; gap: 10px; align-items: center; min-height: 40px; }
-.check input { width: 22px; height: 22px; accent-color: var(--green); }
-.pages { display: grid; gap: 14px; justify-items: center; }
-.pages img { width: 100%; max-width: 520px; background: #fff; box-shadow: 0 1px 4px rgba(0,0,0,.18); border-radius: 2px; }
-.pages .cap { font-size: 12px; color: var(--muted); }
+.check input { width: 22px; height: 22px; accent-color: #17150F; }
 
 /* sheet + toast */
 .scrim { position: fixed; inset: 0; background: var(--scrim); z-index: 40; display: flex; align-items: flex-end; justify-content: center; }
 .sheet {
-  background: var(--surface); width: 100%; max-width: 560px; border-radius: 16px 16px 0 0; max-height: 92%; overflow-y: auto;
+  background: var(--surface); width: 100%; max-width: 560px; border-radius: 16px 16px 0 0; max-height: 92%; overflow-y: auto; border-top: 6px solid #FFC400;
   padding-top: 18px; padding-bottom: calc(18px + env(safe-area-inset-bottom, 0px)); display: grid; gap: 14px;
 }
 .sheet h2 { margin: 0; font-size: 18px; text-wrap: balance; }
 .sheet p { margin: 0; color: var(--muted); }
 .toast {
   position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(var(--bar-h) + 28px + env(safe-area-inset-bottom, 0px)); z-index: 60;
-  background: var(--ink); color: var(--bg); padding: 10px 16px; border-radius: 10px; font-size: 14px; max-width: calc(100% - 32px); text-align: center;
+  background: #17150F; color: #FFC400; font-weight: 600; padding: 10px 16px; border-radius: 10px; font-size: 14px; max-width: calc(100% - 32px); text-align: center;
 }
-.banner { background: color-mix(in srgb, var(--warn) 14%, var(--surface)); border: 1px solid color-mix(in srgb, var(--warn) 40%, transparent); border-radius: var(--r); padding: 10px 12px; font-size: 13.5px; }
 .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
 </style>
 
@@ -198,17 +193,21 @@ textarea { resize: vertical; min-height: 56px; }
 const $ = (s, el = document) => el.querySelector(s);
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
-const today = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; };
+const pad2 = n => String(n).padStart(2, '0');
+const dayOf = ts => { const d = new Date(ts); return `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`; };
+const today = () => dayOf(Date.now());
+const WEEK = ['일', '월', '화', '수', '목', '금', '토'];
+const parseDay = id => { const [y, m, d] = id.split('-').map(Number); return new Date(y, m - 1, d); };
+const dayLabel = id => { const d = parseDay(id); return `${d.getMonth() + 1}월 ${d.getDate()}일 (${WEEK[d.getDay()]})`; };
 const fmtDate = s => s ? s.replaceAll('-', '.') : '';
-const fmtDT = ts => { if (!ts) return ''; const d = new Date(ts); return `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, '0')}.${String(d.getDate()).padStart(2, '0')} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`; };
+const fmtTime = ts => { const d = new Date(ts); return `${pad2(d.getHours())}:${pad2(d.getMinutes())}`; };
+const fmtDT = ts => ts ? `${fmtDate(dayOf(ts))} ${fmtTime(ts)}` : '';
 const ICON = {
   back: '<path d="M15 18l-6-6 6-6"/>',
   gear: '<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/>',
   more: '<circle cx="12" cy="5" r="1.4"/><circle cx="12" cy="12" r="1.4"/><circle cx="12" cy="19" r="1.4"/>',
   cam: '<path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/>',
   img: '<rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/>',
-  print: '<path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/>',
-  plus: '<path d="M12 5v14M5 12h14"/>',
   mic: '<rect x="9" y="2" width="6" height="12" rx="3"/><path d="M19 10v1a7 7 0 0 1-14 0v-1M12 18v4M8 22h8"/>',
   pen: '<path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/>',
   arrow: '<path d="M5 19L19 5M9 5h10v10"/>',
@@ -221,6 +220,7 @@ const ICON = {
   redo: '<path d="M21 7v6h-6"/><path d="M3 17a9 9 0 0 1 15-6.7L21 13"/>',
   trash: '<path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/>',
   send: '<path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4z"/>',
+  share: '<circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/>',
   prev: '<path d="M15 18l-6-6 6-6"/>', next: '<path d="M9 18l6-6-6-6"/>',
 };
 const svg = (n) => `<svg viewBox="0 0 24 24" aria-hidden="true">${ICON[n]}</svg>`;
@@ -233,19 +233,25 @@ function toast(msg, ms = 2600) {
   clearTimeout(toastTimer); toastTimer = setTimeout(() => { t.hidden = true; }, ms);
 }
 
-/* ---------- storage (IndexedDB, in-memory fallback) ---------- */
-const mem = { inspections: new Map(), photos: new Map(), settings: new Map() };
+/* ---------- storage (IndexedDB, in-memory fallback) ----------
+   days:   { id: 'YYYY-MM-DD', site, order: [photoId], sample?, updatedAt }
+   photos: small records only (fields, marks, times), so every edit saves fast
+   blobs / thumbs: the image bytes, written once when a photo is added */
+const mem = { days: new Map(), photos: new Map(), blobs: new Map(), thumbs: new Map(), settings: new Map(), inspections: new Map() };
 let idb = null;
 function openDB() {
   return new Promise((resolve) => {
     try {
-      const r = indexedDB.open('photo-ledger', 1);
+      const r = indexedDB.open('photo-ledger', 2);
       r.onupgradeneeded = () => {
-        const d = r.result;
-        d.createObjectStore('inspections', { keyPath: 'id' });
-        const p = d.createObjectStore('photos', { keyPath: 'id' });
-        p.createIndex('by_insp', 'inspectionId');
-        d.createObjectStore('settings');
+        const d = r.result, has = n => d.objectStoreNames.contains(n);
+        if (!has('days')) d.createObjectStore('days', { keyPath: 'id' });
+        if (!has('blobs')) d.createObjectStore('blobs', { keyPath: 'id' });
+        if (!has('thumbs')) d.createObjectStore('thumbs', { keyPath: 'id' });
+        if (!has('settings')) d.createObjectStore('settings');
+        if (!has('inspections')) d.createObjectStore('inspections', { keyPath: 'id' }); // version 1 data, moved into days by migrate()
+        const ps = has('photos') ? r.transaction.objectStore('photos') : d.createObjectStore('photos', { keyPath: 'id' });
+        if (!ps.indexNames.contains('by_day')) ps.createIndex('by_day', 'day');
       };
       r.onsuccess = () => resolve(r.result);
       r.onerror = () => resolve(null);
@@ -253,22 +259,31 @@ function openDB() {
     } catch (e) { resolve(null); }
   });
 }
-function tx(store, mode, fn) {
+function tx(name, mode, fn) {
   return new Promise((resolve, reject) => {
-    const t = idb.transaction(store, mode); const s = t.objectStore(store);
+    const t = idb.transaction(name, mode); const s = t.objectStore(name);
     const req = fn(s);
     t.oncomplete = () => resolve(req && req.result);
     t.onerror = () => reject(t.error);
   });
 }
+const plain = name => name === 'blobs' || name === 'thumbs';
 const store = {
   async put(name, val, key) {
-    if (!idb) { mem[name].set(key ?? val.id, structuredClone(val)); return; }
+    if (!idb) { mem[name].set(key ?? val.id, plain(name) ? val : structuredClone(val)); return; }
     return tx(name, 'readwrite', s => key !== undefined ? s.put(val, key) : s.put(val));
   },
   async get(name, key) {
-    if (!idb) { const v = mem[name].get(key); return v && structuredClone(v); }
+    if (!idb) { const v = mem[name].get(key); return v && (plain(name) ? v : structuredClone(v)); }
     return tx(name, 'readonly', s => s.get(key));
+  },
+  async getMany(name, keys) {
+    if (!idb) return keys.map(k => mem[name].get(k));
+    return new Promise((resolve, reject) => {
+      const t = idb.transaction(name, 'readonly'); const s = t.objectStore(name);
+      const reqs = keys.map(k => s.get(k));
+      t.oncomplete = () => resolve(reqs.map(r => r.result)); t.onerror = () => reject(t.error);
+    });
   },
   async all(name) {
     if (!idb) return [...mem[name].values()].map(v => structuredClone(v));
@@ -278,16 +293,27 @@ const store = {
     if (!idb) { mem[name].delete(key); return; }
     return tx(name, 'readwrite', s => s.delete(key));
   },
-  async photosOf(inspId) {
-    if (!idb) return [...mem.photos.values()].filter(p => p.inspectionId === inspId).map(v => structuredClone(v));
-    return tx('photos', 'readonly', s => s.index('by_insp').getAll(inspId));
+  async clear(name) {
+    if (!idb) { mem[name].clear(); return; }
+    return tx(name, 'readwrite', s => s.clear());
+  },
+  async photosOf(dayId) {
+    if (!idb) return [...mem.photos.values()].filter(p => p.day === dayId).map(v => structuredClone(v));
+    return tx('photos', 'readonly', s => s.index('by_day').getAll(dayId));
   },
 };
+async function delPhoto(id) {
+  await Promise.all([store.del('photos', id), store.del('blobs', id), store.del('thumbs', id)]);
+  forgetPhoto(id);
+}
+async function getDay(id) {
+  return (await store.get('days', id)) || { id, site: settings.site, order: [], updatedAt: Date.now() };
+}
 
 const DEFAULT_SETTINGS = {
-  company: '', inspector: '',
+  site: '',
   labels: { loc: '위치', desc: '내용', act: '조치' },
-  phrases: ['양호', '재시공 요망', '보수 후 재점검 요청', '즉시 시정 지시', '안전난간 미설치', '정리정돈 불량', '균열 발생', '누수 흔적', '피복 두께 부족', '자재 적치 불량'],
+  phrases: ['양호', '재시공 요망', '보수 후 재점검 요청', '즉시 시정 지시', '안전난간 미설치', '안전모 미착용', '정리정돈 불량', '균열 발생', '누수 흔적', '자재 적치 불량'],
   color: '#E53935', width: 2, geo: false,
 };
 let settings = structuredClone(DEFAULT_SETTINGS);
@@ -295,36 +321,75 @@ async function loadSettings() {
   try { const s = await store.get('settings', 'main'); if (s) settings = { ...structuredClone(DEFAULT_SETTINGS), ...s, labels: { ...DEFAULT_SETTINGS.labels, ...(s.labels || {}) } }; } catch (e) {}
 }
 async function saveSettings() { try { await store.put('settings', settings, 'main'); } catch (e) { toast('설정을 저장하지 못했습니다.'); } }
+const siteOf = day => (day && day.site) || settings.site || '';
+
+// Version 1 kept 점검 건 (inspections) with image bytes inside each photo record. Move them into days.
+async function migrate() {
+  const insps = await store.all('inspections');
+  if (!insps.length) return;
+  const old = new Map((await store.all('photos')).map(p => [p.id, p]));
+  for (const insp of insps) {
+    const list = (insp.order || []).map(id => old.get(id)).filter(Boolean);
+    if (insp.sample) { for (const p of list) await store.del('photos', p.id); continue; }
+    const day = await getDay(insp.date || today());
+    if (!day.site) day.site = insp.title || '';
+    for (const p of list) {
+      if (p.data) {
+        await store.put('blobs', { id: p.id, blob: new Blob([p.data], { type: p.type || 'image/jpeg' }) });
+        await store.put('thumbs', { id: p.id, blob: new Blob([p.thumb || p.data], { type: 'image/jpeg' }) });
+      }
+      const { data, thumb, type, include, inspectionId, ...meta } = p;
+      await store.put('photos', { ...meta, day: day.id });
+      if (!day.order.includes(p.id)) day.order.push(p.id);
+    }
+    day.updatedAt = Date.now();
+    await store.put('days', day);
+  }
+  await store.clear('inspections');
+}
 
 /* ---------- image handling ---------- */
-const MAX_SIDE = 2048, THUMB = 320;
+const MAX_SIDE = 1600, THUMB = 320;
 async function decode(blob) {
   if ('createImageBitmap' in window) {
     try { return await createImageBitmap(blob, { imageOrientation: 'from-image' }); } catch (e) {}
   }
   return new Promise((res, rej) => { const i = new Image(); i.onload = () => res(i); i.onerror = rej; i.src = URL.createObjectURL(blob); });
 }
-function canvasToBlob(c, type = 'image/jpeg', q = 0.88) {
+function canvasToBlob(c, type = 'image/jpeg', q = 0.85) {
   return new Promise(res => c.toBlob(b => res(b), type, q));
 }
-async function scaled(src, max, q) {
-  const w = src.width, h = src.height, k = Math.min(1, max / Math.max(w, h));
-  const c = document.createElement('canvas'); c.width = Math.round(w * k); c.height = Math.round(h * k);
-  c.getContext('2d').drawImage(src, 0, 0, c.width, c.height);
-  return { blob: await canvasToBlob(c, 'image/jpeg', q), w: c.width, h: c.height };
+function drawScaled(src, max) {
+  const k = Math.min(1, max / Math.max(src.width, src.height));
+  const c = document.createElement('canvas'); c.width = Math.round(src.width * k); c.height = Math.round(src.height * k);
+  const ctx = c.getContext('2d'); ctx.imageSmoothingQuality = 'high'; ctx.drawImage(src, 0, 0, c.width, c.height);
+  return c;
 }
+// Decoded photos for the editor and publishing; a handful is plenty and keeps memory low on phones.
 const bmpCache = new Map(); const urlCache = new Map();
-async function photoBitmap(p) {
-  if (bmpCache.has(p.id)) return bmpCache.get(p.id);
-  const b = await decode(new Blob([p.data], { type: p.type || 'image/jpeg' }));
-  bmpCache.set(p.id, b); return b;
+function cacheBitmap(id, img) {
+  bmpCache.delete(id); bmpCache.set(id, img);
+  while (bmpCache.size > 6) bmpCache.delete(bmpCache.keys().next().value);
 }
-function thumbURL(p) {
-  if (urlCache.has(p.id)) return urlCache.get(p.id);
-  const u = URL.createObjectURL(new Blob([p.thumb || p.data], { type: 'image/jpeg' }));
-  urlCache.set(p.id, u); return u;
+async function photoBitmap(p) {
+  if (bmpCache.has(p.id)) { const b = bmpCache.get(p.id); cacheBitmap(p.id, b); return b; }
+  const rec = await store.get('blobs', p.id);
+  const b = await decode(rec.blob instanceof Blob ? rec.blob : new Blob([rec.blob], { type: 'image/jpeg' }));
+  cacheBitmap(p.id, b); return b;
 }
 function forgetPhoto(id) { bmpCache.delete(id); const u = urlCache.get(id); if (u) URL.revokeObjectURL(u); urlCache.delete(id); }
+// Thumbnails are drawn as <img data-thumb="id">; fill them in one read after the screen is on.
+const thumbAttr = id => urlCache.has(id) ? `src="${urlCache.get(id)}"` : `data-thumb="${id}"`;
+async function fillThumbs(root) {
+  const imgs = [...root.querySelectorAll('img[data-thumb]')];
+  if (!imgs.length) return;
+  const ids = [...new Set(imgs.map(i => i.dataset.thumb))];
+  try {
+    const recs = await store.getMany('thumbs', ids);
+    recs.forEach((r, k) => { if (r && !urlCache.has(ids[k])) urlCache.set(ids[k], URL.createObjectURL(r.blob instanceof Blob ? r.blob : new Blob([r.blob], { type: 'image/jpeg' }))); });
+  } catch (e) {}
+  imgs.forEach(i => { const u = urlCache.get(i.dataset.thumb); if (u) { i.src = u; i.removeAttribute('data-thumb'); } });
+}
 
 function getGeo() {
   return new Promise(res => {
@@ -333,27 +398,32 @@ function getGeo() {
     catch (e) { res(null); }
   });
 }
-async function addFiles(insp, files) {
-  if (!files.length) return 0;
+// Adds photos to dayId, or to the day each was taken when dayId is null. Decodes each file once.
+async function addFiles(files, dayId) {
   const geo = await getGeo();
-  let n = 0;
-  for (const f of files) {
+  const days = new Map(); const ids = [];
+  const list = [...files].sort((a, b) => (a.lastModified || 0) - (b.lastModified || 0));
+  for (const f of list) {
     try {
       const src = await decode(f);
-      const big = await scaled(src, MAX_SIDE, 0.88);
-      const th = await scaled(src, THUMB, 0.75);
-      const p = {
-        id: uid(), inspectionId: insp.id, data: await big.blob.arrayBuffer(), type: 'image/jpeg', thumb: await th.blob.arrayBuffer(),
-        w: big.w, h: big.h, takenAt: f.lastModified || Date.now(), lat: geo?.lat ?? null, lng: geo?.lng ?? null,
-        fields: { loc: '', desc: '', act: '' }, marks: [], include: true,
-      };
-      await store.put('photos', p);
-      insp.order.push(p.id); n++;
+      const big = drawScaled(src, MAX_SIDE);
+      if (src.close) src.close();
+      const th = drawScaled(big, THUMB);
+      const [bb, tb] = await Promise.all([canvasToBlob(big, 'image/jpeg', 0.85), canvasToBlob(th, 'image/jpeg', 0.72)]);
+      const takenAt = f.lastModified || Date.now();
+      const did = dayId || dayOf(takenAt);
+      if (!days.has(did)) days.set(did, await getDay(did));
+      const id = uid();
+      await store.put('blobs', { id, blob: bb });
+      await store.put('thumbs', { id, blob: tb });
+      await store.put('photos', { id, day: did, w: big.width, h: big.height, takenAt, lat: geo?.lat ?? null, lng: geo?.lng ?? null, fields: { loc: '', desc: '', act: '' }, marks: [], publishedAt: null });
+      urlCache.set(id, URL.createObjectURL(tb));
+      cacheBitmap(id, big);
+      days.get(did).order.push(id); ids.push(id);
     } catch (e) { toast('사진 한 장을 읽지 못해 건너뛰었습니다.'); }
   }
-  insp.updatedAt = Date.now();
-  await store.put('inspections', insp);
-  return n;
+  for (const d of days.values()) { d.updatedAt = Date.now(); await store.put('days', d); }
+  return ids;
 }
 
 /* ---------- marks: geometry + drawing (normalized 0..1 coords) ---------- */
@@ -415,23 +485,25 @@ function moveMark(m, dx, dy) {
 const FONT_CANVAS = '"IBM Plex Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", "Noto Sans KR", sans-serif';
 
 /* ---------- app state + router ---------- */
-const state = { view: 'home', inspId: null, photoIdx: 0, reorder: false, exportMode: 'single', cover: false, singleFmt: 'jpg' };
-let current = null;   // inspection
-let photos = [];      // ordered photos of current inspection
+const state = { view: 'home', photoIdx: 0, reorder: false, from: 'home', pickDay: null };
+let current = null;   // day record being viewed or edited
+let photos = [];      // ordered photos of that day
 
-async function loadInsp(id) {
-  current = await store.get('inspections', id);
-  if (!current) { photos = []; return; }
-  const list = await store.photosOf(id);
+function ordered(day, list) {
   const byId = new Map(list.map(p => [p.id, p]));
-  photos = current.order.map(i => byId.get(i)).filter(Boolean);
-  // keep order list consistent with what exists
-  if (photos.length !== current.order.length) { current.order = photos.map(p => p.id); await store.put('inspections', current); }
+  const out = day.order.map(i => byId.get(i)).filter(Boolean);
+  for (const p of list) if (!day.order.includes(p.id)) out.push(p);
+  return out;
+}
+async function loadDay(id) {
+  current = await getDay(id);
+  photos = ordered(current, await store.photosOf(id));
+  if (photos.length !== current.order.length) { current.order = photos.map(p => p.id); await store.put('days', current); }
 }
 function go(view, patch = {}) { Object.assign(state, { view }, patch); render(); window.scrollTo(0, 0); }
 
-function setTop(title, { back = null, right = '' } = {}) {
-  $('#topbar').innerHTML = `${back ? `<button class="iconbtn" id="backBtn" aria-label="뒤로">${svg('back')}</button>` : ''}<h1>${esc(title)}</h1>${right}`;
+function setTop(title, { back = null, sub = '', right = '' } = {}) {
+  $('#topbar').innerHTML = `${back ? `<button class="iconbtn" id="backBtn" aria-label="뒤로">${svg('back')}</button>` : ''}<div class="ttl"><h1>${esc(title)}</h1>${sub ? `<small>${esc(sub)}</small>` : ''}</div>${right}`;
   if (back) $('#backBtn').onclick = back;
 }
 function setActions(html) {
@@ -444,9 +516,8 @@ async function render() {
   stopVoice();
   closeSheet();
   if (state.view === 'home') return renderHome();
-  if (state.view === 'insp') return renderInsp();
+  if (state.view === 'day') return renderDay();
   if (state.view === 'edit') return renderEditor();
-  if (state.view === 'export') return renderExport();
   if (state.view === 'settings') return renderSettings();
 }
 
@@ -465,142 +536,138 @@ function confirmSheet(title, body, okLabel, onOk, danger = true) {
   });
 }
 
-/* ---------- home ---------- */
-async function renderHome() {
-  setTop('현장 사진대지', { right: `<button class="iconbtn" id="setBtn" aria-label="설정">${svg('gear')}</button>` });
-  $('#setBtn').onclick = () => go('settings');
-  const list = (await store.all('inspections')).sort((a, b) => (b.date || '').localeCompare(a.date || '') || b.updatedAt - a.updatedAt);
-  const allPhotos = await store.all('photos');
-  const stats = new Map();
-  for (const p of allPhotos) {
-    const s = stats.get(p.inspectionId) || { n: 0, miss: 0, first: null };
-    s.n++; if (!p.fields.desc.trim()) s.miss++; stats.set(p.inspectionId, s);
-  }
-  const firstThumb = new Map(allPhotos.map(p => [p.id, p]));
-  const v = $('#view');
-  v.innerHTML = `
-    ${!idb ? `<div class="banner">이 화면에서는 기기에 저장할 수 없어 창을 닫으면 작업이 사라집니다. 출력 파일은 저장해 두세요.</div>` : ''}
-    <div class="row between"><span class="eyebrow">점검 건 ${list.length}개</span></div>
-    ${list.length ? `<div class="cards">${list.map(i => {
-      const s = stats.get(i.id) || { n: 0, miss: 0 };
-      const fp = firstThumb.get(i.order[0]);
-      return `<div class="card">
-        <button class="thumbstrip" data-open="${i.id}" style="${fp ? `background-image:url(${thumbURL(fp)})` : ''}" aria-label="${esc(i.title)} 열기"></button>
-        <button class="body" data-open="${i.id}" style="border:0;background:none;text-align:left;padding:0">
-          <span class="title">${esc(i.title || '제목 없음')}</span>
-          <span class="meta"><span>${fmtDate(i.date)}</span>${i.category ? `<span>· ${esc(i.category)}</span>` : ''}
-            <span class="chip">사진 ${s.n}</span>${s.miss ? `<span class="chip warn">설명 없음 ${s.miss}</span>` : (s.n ? `<span class="chip ok">작성 완료</span>` : '')}${i.sample ? `<span class="chip sample">예시</span>` : ''}</span>
-        </button>
-        <button class="iconbtn" data-more="${i.id}" aria-label="더보기">${svg('more')}</button>
-      </div>`;
-    }).join('')}</div>` : `<div class="empty"><b>아직 점검 건이 없습니다</b><span>새 점검을 만들고 사진을 찍어 보세요.</span><button class="btn" id="seedBtn">예시 점검 건 불러오기</button></div>`}
-  `;
-  v.querySelectorAll('[data-open]').forEach(b => b.onclick = async () => { await loadInsp(b.dataset.open); go('insp', { inspId: b.dataset.open, reorder: false }); });
-  v.querySelectorAll('[data-more]').forEach(b => b.onclick = () => inspMenu(list.find(i => i.id === b.dataset.more)));
-  const sb = $('#seedBtn'); if (sb) sb.onclick = async () => { await seedSample(); render(); };
-  setActions(`<button class="btn primary grow" id="newBtn">${svg('plus')}새 점검</button>`);
-  $('#newBtn').onclick = () => inspForm(null);
+/* ---------- shared pieces ---------- */
+function stats(ps) {
+  const pub = ps.filter(p => p.publishedAt).length, miss = ps.filter(p => !p.fields.desc.trim()).length;
+  return `<span class="chip">사진 ${ps.length}</span>${pub ? `<span class="chip ok">발행 ${pub}</span>` : ''}${miss ? `<span class="chip warn">설명 없음 ${miss}</span>` : ''}`;
 }
-function inspMenu(i) {
-  openSheet(`<h2>${esc(i.title)}</h2>
-    <button class="btn" id="mEdit">점검 정보 수정</button>
-    <button class="btn" id="mDup">복제 (후속 점검용, 사진 제외)</button>
-    <button class="btn danger" id="mDel">삭제</button>
-    <button class="btn" id="mClose">닫기</button>`, s => {
-    $('#mClose', s).onclick = closeSheet;
-    $('#mEdit', s).onclick = () => inspForm(i);
-    $('#mDup', s).onclick = async () => {
-      const n = { ...i, id: uid(), title: i.title.replace(/^\(예시\)\s*/, '') + ' (후속)', date: today(), order: [], sample: false, createdAt: Date.now(), updatedAt: Date.now() };
-      await store.put('inspections', n); closeSheet(); toast('복제했습니다.'); render();
-    };
-    $('#mDel', s).onclick = () => confirmSheet('점검 건을 삭제할까요?', `"${i.title}"과 사진 ${i.order.length}장이 모두 지워집니다. 되돌릴 수 없습니다.`, '삭제', async () => {
-      for (const pid of i.order) { await store.del('photos', pid); forgetPhoto(pid); }
-      await store.del('inspections', i.id); toast('삭제했습니다.'); go('home');
-    });
-  });
+function tiles(ps, { reorder = false } = {}) {
+  return `<div class="grid">${ps.map((p, k) => `
+    <div class="tile" ${reorder ? '' : `role="button" tabindex="0" data-edit="${k}"`} aria-label="${fmtTime(p.takenAt)} 사진${p.publishedAt ? ', 발행됨' : ''}">
+      <img ${thumbAttr(p.id)} alt="">
+      ${p.publishedAt ? '<span class="pub">발행</span>' : ''}
+      ${!p.fields.desc.trim() ? '<span class="flag">설명 없음</span>' : ''}
+      ${reorder ? `<div class="reorder"><button data-mv="${k}" data-d="-1" aria-label="앞으로" ${k === 0 ? 'disabled' : ''}>◀</button><button data-mv="${k}" data-d="1" aria-label="뒤로" ${k === ps.length - 1 ? 'disabled' : ''}>▶</button></div>` : `<span class="time">${fmtTime(p.takenAt)}</span>`}
+    </div>`).join('')}</div>`;
 }
-function inspForm(i) {
-  const isNew = !i;
-  const d = i || { title: '', date: today(), inspector: settings.inspector, category: '품질', note: '' };
-  const cats = ['품질', '안전', '기성', '공정', '환경', '기타'];
-  openSheet(`<h2>${isNew ? '새 점검' : '점검 정보 수정'}</h2>
-    <form id="fForm" class="fields">
-      <div class="field"><label for="fTitle">공사명</label><input type="text" id="fTitle" required placeholder="예: OO아파트 신축공사 3층 골조" value="${esc(d.title)}"></div>
-      <div class="row" style="flex-wrap:nowrap">
-        <div class="field" style="flex:1;min-width:0"><label for="fDate">점검일</label><input type="date" id="fDate" value="${esc(d.date)}"></div>
-        <div class="field" style="flex:1;min-width:0"><label for="fCat">구분</label><select id="fCat">${cats.map(c => `<option ${c === d.category ? 'selected' : ''}>${c}</option>`).join('')}</select></div>
-      </div>
-      <div class="field"><label for="fWho">점검자</label><input type="text" id="fWho" value="${esc(d.inspector)}" placeholder="이름"></div>
-      <div class="field"><label for="fNote">비고</label><input type="text" id="fNote" value="${esc(d.note)}" placeholder="선택"></div>
-      <div class="row"><button type="button" class="btn grow" id="fCancel">취소</button><button class="btn primary grow" type="submit">${isNew ? '만들고 촬영하기' : '저장'}</button></div>
-    </form>`, s => {
-    $('#fCancel', s).onclick = closeSheet;
-    $('#fForm', s).onsubmit = async e => {
-      e.preventDefault();
-      const title = $('#fTitle', s).value.trim();
-      if (!title) { toast('공사명을 입력해 주세요.'); return; }
-      const rec = isNew ? { id: uid(), order: [], createdAt: Date.now() } : i;
-      Object.assign(rec, { title, date: $('#fDate', s).value || today(), category: $('#fCat', s).value, inspector: $('#fWho', s).value.trim(), note: $('#fNote', s).value.trim(), updatedAt: Date.now() });
-      await store.put('inspections', rec);
-      if (rec.inspector && !settings.inspector) { settings.inspector = rec.inspector; saveSettings(); }
-      closeSheet();
-      await loadInsp(rec.id); go('insp', { inspId: rec.id, reorder: false });
-    };
-  });
-}
-
-/* ---------- inspection detail ---------- */
-async function renderInsp() {
-  if (!current) return go('home');
-  setTop(current.title, { back: () => go('home'), right: `<button class="iconbtn" id="infoBtn" aria-label="점검 정보 수정">${svg('more')}</button>` });
-  $('#infoBtn').onclick = () => inspMenu(current);
-  const miss = photos.filter(p => !p.fields.desc.trim()).length;
-  const v = $('#view');
-  v.innerHTML = `
-    <section class="infobox">
-      <dl><dt>점검일</dt><dd>${fmtDate(current.date)}</dd><dt>구분</dt><dd>${esc(current.category || '')}</dd>
-      <dt>점검자</dt><dd>${esc(current.inspector || '-')}</dd>${current.note ? `<dt>비고</dt><dd>${esc(current.note)}</dd>` : ''}</dl>
-    </section>
-    <div class="row between">
-      <span class="eyebrow">사진 ${photos.length}장${miss ? ` · 설명 없음 ${miss}장` : ''}</span>
-      ${photos.length > 1 ? `<button class="btn small" id="reBtn" aria-pressed="${state.reorder}">${state.reorder ? '순서 편집 끝' : '순서 편집'}</button>` : ''}
-    </div>
-    ${photos.length ? `<div class="grid">${photos.map((p, k) => `
-      <div class="tile ${p.include ? '' : 'excluded'}" ${state.reorder ? '' : `role="button" tabindex="0" data-edit="${k}"`} aria-label="사진 ${k + 1}">
-        <img src="${thumbURL(p)}" alt="">
-        <span class="no">${k + 1}</span>
-        ${!p.fields.desc.trim() ? '<span class="flag">설명 없음</span>' : ''}
-        ${!p.include ? '<span class="ex">출력 제외</span>' : ''}
-        ${state.reorder ? `<div class="reorder"><button data-mv="${k}" data-d="-1" aria-label="앞으로" ${k === 0 ? 'disabled' : ''}>◀</button><button data-mv="${k}" data-d="1" aria-label="뒤로" ${k === photos.length - 1 ? 'disabled' : ''}>▶</button></div>` : ''}
-      </div>`).join('')}</div>`
-    : `<div class="empty"><b>사진이 없습니다</b><span>아래 촬영 버튼으로 찍거나, 갤러리에서 가져오세요.</span></div>`}
-  `;
-  v.querySelectorAll('[data-edit]').forEach(t => {
-    const open = () => go('edit', { photoIdx: +t.dataset.edit });
+function bindTiles(root, day, ps, from) {
+  root.querySelectorAll('[data-edit]').forEach(t => {
+    const open = () => { current = day; photos = ps; go('edit', { photoIdx: +t.dataset.edit, from }); };
     t.onclick = open; t.onkeydown = e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(); } };
   });
-  const rb = $('#reBtn'); if (rb) rb.onclick = () => { state.reorder = !state.reorder; renderInsp(); };
+}
+function pick(camera, dayId) {
+  state.pickDay = dayId;
+  const inp = camera ? $('#camInput') : $('#galInput'); inp.value = ''; inp.click();
+}
+
+/* ---------- home: today first, then past days ---------- */
+async function renderHome() {
+  setTop('현장 사진대지', { sub: settings.site || '현장명은 설정에서 입력', right: `<button class="iconbtn" id="setBtn" aria-label="설정">${svg('gear')}</button>` });
+  $('#setBtn').onclick = () => go('settings');
+  const [days, metas] = await Promise.all([store.all('days'), store.all('photos')]);
+  if (state.view !== 'home') return;
+  const byDay = new Map();
+  for (const p of metas) { if (!byDay.has(p.day)) byDay.set(p.day, []); byDay.get(p.day).push(p); }
+  const t = today();
+  const td = days.find(d => d.id === t) || await getDay(t);
+  const tps = ordered(td, byDay.get(t) || []);
+  const past = days.filter(d => d.id !== t).map(d => ({ d, ps: ordered(d, byDay.get(d.id) || []) })).filter(x => x.ps.length).sort((a, b) => b.d.id.localeCompare(a.d.id));
+  let month = '';
+  const v = $('#view');
+  v.innerHTML = `
+    ${!idb ? `<div class="banner">이 화면에서는 기기에 저장할 수 없어 창을 닫으면 작업이 사라집니다. 발행한 사진대지는 저장해 두세요.</div>` : ''}
+    <section class="today" aria-labelledby="todayH">
+      <div class="row between" style="flex-wrap:nowrap">
+        <div style="min-width:0"><div class="label">오늘</div><div class="when" id="todayH">${dayLabel(t)}</div></div>
+        ${tps.length ? `<button class="btn small" id="openToday">관리</button>` : ''}
+      </div>
+      ${tps.length ? `<div class="row">${stats(tps)}</div>${tiles(tps)}` : `<div class="empty"><b>오늘 찍은 사진이 없습니다</b><span>아래 촬영 버튼을 누르면 오늘 날짜로 정리됩니다.</span></div>`}
+    </section>
+    ${past.length ? `<span class="eyebrow">지난 기록</span>` : ''}
+    <div class="days">${past.map(({ d, ps }) => {
+      const dt = parseDay(d.id); const mk = `${dt.getFullYear()}년 ${dt.getMonth() + 1}월`;
+      const head = mk !== month ? `<div class="meta-line month">${mk}</div>` : ''; month = mk;
+      return `${head}<button class="daycard" data-day="${d.id}" aria-label="${dayLabel(d.id)} 기록 열기">
+        <span class="datebox"><b>${dt.getDate()}</b><span>${WEEK[dt.getDay()]}요일</span></span>
+        <span class="body"><span class="title">${esc(siteOf(d) || dayLabel(d.id))}</span><span class="meta">${stats(ps)}${d.sample ? '<span class="chip sample">예시</span>' : ''}</span></span>
+        <span class="minithumbs">${ps.slice(0, 3).map(p => `<img ${thumbAttr(p.id)} alt="">`).join('')}</span>
+      </button>`;
+    }).join('')}</div>
+  `;
+  bindTiles(v, td, tps, 'home');
+  const ot = $('#openToday'); if (ot) ot.onclick = async () => { await loadDay(t); go('day', { reorder: false }); };
+  v.querySelectorAll('[data-day]').forEach(b => b.onclick = async () => { await loadDay(b.dataset.day); go('day', { reorder: false }); });
+  setActions(`<button class="btn primary grow" id="camBtn">${svg('cam')}촬영</button>
+    <button class="btn" id="galBtn">${svg('img')}가져오기</button>`);
+  $('#camBtn').onclick = () => pick(true, t);
+  $('#galBtn').onclick = () => pick(false, null);
+  fillThumbs(v);
+}
+
+/* ---------- one day ---------- */
+async function renderDay() {
+  if (!current) return go('home');
+  const isToday = current.id === today();
+  setTop(dayLabel(current.id), { back: () => go('home'), sub: siteOf(current), right: `<button class="iconbtn" id="dayMore" aria-label="이 날 관리">${svg('more')}</button>` });
+  $('#dayMore').onclick = () => dayMenu(current);
+  const v = $('#view');
+  v.innerHTML = `
+    <div class="row between">
+      <div class="row">${stats(photos)}${current.sample ? '<span class="chip sample">예시</span>' : ''}</div>
+      ${photos.length > 1 ? `<button class="btn small" id="reBtn" aria-pressed="${state.reorder}">${state.reorder ? '순서 편집 끝' : '순서 편집'}</button>` : ''}
+    </div>
+    ${photos.length ? tiles(photos, { reorder: state.reorder }) : `<div class="empty"><b>사진이 없습니다</b><span>${isToday ? '촬영하거나 갤러리에서 가져오세요.' : '갤러리에서 이 날짜로 사진을 추가할 수 있습니다.'}</span></div>`}
+  `;
+  bindTiles(v, current, photos, 'day');
+  const rb = $('#reBtn'); if (rb) rb.onclick = () => { state.reorder = !state.reorder; renderDay(); };
   v.querySelectorAll('[data-mv]').forEach(b => b.onclick = async () => {
     const k = +b.dataset.mv, j = k + +b.dataset.d;
     [photos[k], photos[j]] = [photos[j], photos[k]];
     current.order = photos.map(p => p.id); current.updatedAt = Date.now();
-    await store.put('inspections', current); renderInsp();
+    await store.put('days', current); renderDay();
   });
-  setActions(`<button class="btn primary grow" id="camBtn">${svg('cam')}촬영</button>
-    <button class="btn" id="galBtn" aria-label="갤러리에서 가져오기">${svg('img')}가져오기</button>
-    <button class="btn" id="expBtn" ${photos.length ? '' : 'disabled'}>${svg('print')}출력</button>`);
-  $('#camBtn').onclick = () => { $('#camInput').value = ''; $('#camInput').click(); };
-  $('#galBtn').onclick = () => { $('#galInput').value = ''; $('#galInput').click(); };
-  $('#expBtn').onclick = () => go('export');
+  setActions(isToday
+    ? `<button class="btn primary grow" id="camBtn">${svg('cam')}촬영</button><button class="btn" id="galBtn">${svg('img')}가져오기</button>`
+    : `<button class="btn primary grow" id="galBtn">${svg('img')}이 날짜로 사진 추가</button>`);
+  const cb = $('#camBtn'); if (cb) cb.onclick = () => pick(true, current.id);
+  $('#galBtn').onclick = () => pick(false, current.id);
+  fillThumbs(v);
 }
+function dayMenu(d) {
+  openSheet(`<h2>${dayLabel(d.id)}</h2>
+    <form id="siteForm" class="field"><label for="dSite">이 날 현장명 (사진대지 제목)</label>
+      <div class="inputwrap"><input type="text" id="dSite" value="${esc(siteOf(d))}" placeholder="예: OO아파트 신축공사"><button class="btn primary" type="submit">저장</button></div></form>
+    <button class="btn danger" id="mDel">이 날 기록 모두 삭제</button>
+    <button class="btn" id="mClose">닫기</button>`, s => {
+    $('#mClose', s).onclick = closeSheet;
+    $('#siteForm', s).onsubmit = async e => {
+      e.preventDefault(); d.site = $('#dSite', s).value.trim(); d.updatedAt = Date.now();
+      await store.put('days', d); toast('저장했습니다.'); render();
+    };
+    $('#mDel', s).onclick = () => confirmSheet('이 날 기록을 삭제할까요?', `${dayLabel(d.id)} 사진 ${d.order.length}장과 설명이 모두 지워집니다. 되돌릴 수 없습니다.`, '삭제', async () => {
+      for (const pid of d.order) await delPhoto(pid);
+      await store.del('days', d.id); toast('삭제했습니다.'); go('home');
+    });
+  });
+}
+
 async function onPicked(e, fromCamera) {
-  const files = [...e.target.files]; if (!files.length || !current) return;
-  toast(`사진 ${files.length}장 저장 중…`, 8000);
-  const n = await addFiles(current, files);
-  await loadInsp(current.id);
-  toast(`사진 ${n}장을 추가했습니다.`);
-  if (fromCamera && n === 1) go('edit', { photoIdx: photos.length - 1 });
-  else go('insp');
+  const files = [...e.target.files]; if (!files.length) return;
+  toast(`사진 ${files.length}장 저장 중…`, 20000);
+  const ids = await addFiles(files, fromCamera ? (state.pickDay || today()) : state.pickDay);
+  if (!ids.length) { toast('사진을 읽지 못했습니다.'); return; }
+  const from = state.view === 'day' ? 'day' : 'home';
+  if (fromCamera && ids.length === 1) {
+    const p = await store.get('photos', ids[0]);
+    await loadDay(p.day);
+    $('#toast').hidden = true;
+    go('edit', { photoIdx: photos.findIndex(x => x.id === p.id), from });
+    return;
+  }
+  if (state.view === 'day' && current) await loadDay(current.id);
+  toast(`사진 ${ids.length}장을 추가했습니다.`);
+  render();
 }
 $('#camInput').addEventListener('change', e => onPicked(e, true));
 $('#galInput').addEventListener('change', e => onPicked(e, false));
@@ -609,15 +676,17 @@ $('#galInput').addEventListener('change', e => onPicked(e, false));
 const ed = { tool: 'circle', marks: [], undo: [], redo: [], draft: null, sel: -1, drag: null, img: null, canvas: null, saveT: null, field: 'desc' };
 const TOOLS = [['move', '선택'], ['pen', '펜'], ['arrow', '화살표'], ['circle', '원'], ['rect', '네모'], ['text', '글자'], ['num', '번호']];
 const COLORS = [['#E53935', '빨강'], ['#FDD835', '노랑'], ['#1E88E5', '파랑'], ['#FFFFFF', '흰색']];
+const canShare = () => !!window.AndroidBridge || !!navigator.share;
+const leaveEditor = async () => { await flushSave(); if (state.from === 'day') await loadDay(current.id); go(state.from === 'day' ? 'day' : 'home'); };
 
 async function renderEditor() {
-  if (!current || !photos.length) return go('insp');
+  if (!current || !photos.length) return go('home');
   state.photoIdx = Math.max(0, Math.min(state.photoIdx, photos.length - 1));
   const p = photos[state.photoIdx];
   ed.marks = structuredClone(p.marks || []); ed.undo = []; ed.redo = []; ed.sel = -1; ed.draft = null;
   const L = settings.labels;
   setTop(`사진 ${state.photoIdx + 1} / ${photos.length}`, {
-    back: async () => { await flushSave(); go('insp'); },
+    back: leaveEditor, sub: `${dayLabel(current.id)} ${fmtTime(p.takenAt)}${p.publishedAt ? ' · 발행함' : ''}`,
     right: `<button class="iconbtn" id="pPrev" aria-label="이전 사진" ${state.photoIdx === 0 ? 'disabled' : ''}>${svg('prev')}</button><button class="iconbtn" id="pNext" aria-label="다음 사진" ${state.photoIdx === photos.length - 1 ? 'disabled' : ''}>${svg('next')}</button>`,
   });
   const v = $('#view');
@@ -633,7 +702,6 @@ async function renderEditor() {
       <div class="swatches" role="group" aria-label="색">${COLORS.map(([c, n]) => `<button class="swatch" data-color="${c}" aria-label="${n}" aria-pressed="${settings.color === c}" style="background:${c}"></button>`).join('')}</div>
       <div class="seg" role="group" aria-label="굵기">${[[1, '얇게'], [2, '보통'], [3, '굵게']].map(([w, n]) => `<button data-w="${w}" aria-pressed="${settings.width === w}">${n}</button>`).join('')}</div>
     </div>
-    <div class="meta-line">촬영 ${fmtDT(p.takenAt)}${p.lat != null ? ` · GPS ${p.lat.toFixed(5)}, ${p.lng.toFixed(5)}` : ''}</div>
     <div class="fields">
       ${['loc', 'desc', 'act'].map(k => `
       <div class="field">
@@ -645,14 +713,14 @@ async function renderEditor() {
       </div>`).join('')}
       <div class="field"><label>자주 쓰는 문구 <span id="phTarget" class="meta-line"></span></label><div class="phrases" id="phrases">${settings.phrases.map(s => `<button type="button">${esc(s)}</button>`).join('')}</div></div>
     </div>
-    <div class="row">
-      <label class="check"><input type="checkbox" id="incl" ${p.include ? 'checked' : ''}> 출력에 포함</label>
-      <span style="flex:1"></span>
+    <div class="row between">
+      <span class="meta-line">${p.lat != null ? `GPS ${p.lat.toFixed(5)}, ${p.lng.toFixed(5)}` : ''}</span>
       <button class="btn small danger" id="delPhoto">사진 삭제</button>
     </div>
   `;
   ed.canvas = $('#cv');
   ed.img = await photoBitmap(p);
+  if (state.view !== 'edit' || photos[state.photoIdx] !== p) return;
   layoutCanvas(); paint();
 
   $('#pPrev').onclick = async () => { await flushSave(); go('edit', { photoIdx: state.photoIdx - 1 }); };
@@ -682,42 +750,37 @@ async function renderEditor() {
   });
   const cp = $('#copyPrev'); if (cp) cp.onclick = () => { const prev = photos[state.photoIdx - 1]; $('#f_loc').value = prev.fields.loc; p.fields.loc = prev.fields.loc; queueSave(); };
   v.querySelectorAll('[data-mic]').forEach(b => b.onclick = () => toggleVoice(b.dataset.mic, b));
-  $('#incl').onchange = e => { p.include = e.target.checked; queueSave(); };
   $('#delPhoto').onclick = () => confirmSheet('이 사진을 삭제할까요?', '마킹과 설명도 함께 지워집니다.', '삭제', async () => {
-    await store.del('photos', p.id); forgetPhoto(p.id);
-    current.order = current.order.filter(i => i !== p.id); await store.put('inspections', current);
-    await loadInsp(current.id); toast('삭제했습니다.');
-    if (photos.length) go('edit', { photoIdx: Math.min(state.photoIdx, photos.length - 1) }); else go('insp');
+    clearTimeout(ed.saveT); ed.saveT = null;
+    await delPhoto(p.id);
+    current.order = current.order.filter(i => i !== p.id); current.updatedAt = Date.now(); await store.put('days', current);
+    await loadDay(current.id); toast('삭제했습니다.');
+    if (photos.length) go('edit', { photoIdx: Math.min(state.photoIdx, photos.length - 1) }); else go(state.from === 'day' ? 'day' : 'home');
   });
   bindCanvas();
   syncTools();
-  setActions(`<button class="btn go grow" id="toExport">${svg('print')}전체 출력</button>
-    <button class="btn primary grow" id="pubOne">${svg('send')}이 사진 발행</button>`);
-  $('#toExport').onclick = async () => { await flushSave(); go('export'); };
-  $('#pubOne').onclick = () => publishSheet(p);
+  setActions(`${canShare() ? `<button class="btn yellow grow" id="pubShare">${svg('share')}보내기</button>` : ''}
+    <button class="btn primary grow" id="pubSave">${svg('send')}발행</button>`);
+  const sh = $('#pubShare'); if (sh) sh.onclick = () => publish(p, 'share');
+  $('#pubSave').onclick = () => publish(p, 'save');
 }
-// 발행: turn the photo being edited into a finished 사진대지 right away.
-function publishSheet(p) {
-  const n = state.photoIdx + 1;
-  const missing = !p.fields.desc.trim();
-  openSheet(`<h2>사진 ${n} 발행</h2>
-    ${missing ? `<div class="banner">${esc(settings.labels.desc)} 칸이 비어 있습니다. 그대로 발행하면 빈 칸으로 나옵니다.</div>` : '<p>입력한 내용으로 사진대지 1장을 만듭니다.</p>'}
-    <button class="btn primary" id="pJpg">사진 1장 이미지 (JPG)</button>
-    <button class="btn" id="pPdf">사진 1장 PDF</button>
-    <button class="btn" id="pCancel">닫기</button>`, s => {
-    $('#pCancel', s).onclick = closeSheet;
-    const run = async (kind) => {
-      closeSheet(); await flushSave(); toast('사진대지를 만드는 중…', 6000);
-      try {
-        const c = await composeSingle(current, p);
-        const base = `사진대지_${safeName(current.title)}_${current.date}_${String(n).padStart(2, '0')}${p.fields.loc ? '_' + safeName(p.fields.loc) : ''}`;
-        if (kind === 'jpg') await saveFile(await canvasToBlob(c, 'image/jpeg', 0.9), `${base}.jpg`);
-        else await saveFile(await buildPDF([c], null), `${base}.pdf`);
-      } catch (e) { console.error(e); toast('사진대지를 만들지 못했습니다.'); }
-    };
-    $('#pJpg', s).onclick = () => run('jpg');
-    $('#pPdf', s).onclick = () => run('pdf');
-  });
+// 발행: make the finished 사진대지 for this photo, save or share it, then go back to the main screen.
+async function publish(p, mode) {
+  const btns = [...document.querySelectorAll('#actions button')];
+  btns.forEach(b => b.disabled = true);
+  const main = mode === 'share' ? $('#pubShare') : $('#pubSave'); const old = main.innerHTML; main.textContent = '만드는 중…';
+  try {
+    await flushSave();
+    const c = await composeSingle(current, p);
+    const blob = await canvasToBlob(c, 'image/jpeg', 0.85);
+    const msg = await deliver(blob, publishName(p), mode);
+    if (!msg) { btns.forEach(b => b.disabled = false); main.innerHTML = old; return; }
+    p.publishedAt = Date.now(); await store.put('photos', p);
+    go('home'); toast(msg, 3500);
+  } catch (e) {
+    console.error(e); toast('사진대지를 만들지 못했습니다.');
+    btns.forEach(b => b.disabled = false); main.innerHTML = old;
+  }
 }
 function syncTools() {
   document.querySelectorAll('[data-tool]').forEach(b => b.setAttribute('aria-pressed', b.dataset.tool === ed.tool));
@@ -804,7 +867,7 @@ function queueSave() { clearTimeout(ed.saveT); ed.saveT = setTimeout(flushSave, 
 async function flushSave() {
   clearTimeout(ed.saveT); ed.saveT = null;
   const p = photos[state.photoIdx]; if (!p || state.view !== 'edit') return;
-  try { await store.put('photos', p); current.updatedAt = Date.now(); await store.put('inspections', current); } catch (e) { toast('저장하지 못했습니다. 저장 공간을 확인해 주세요.'); }
+  try { await store.put('photos', p); current.updatedAt = Date.now(); await store.put('days', current); } catch (e) { toast('저장하지 못했습니다. 저장 공간을 확인해 주세요.'); }
 }
 window.addEventListener('resize', () => { if (state.view === 'edit' && ed.img) { layoutCanvas(); paint(); } });
 document.addEventListener('visibilitychange', () => { if (document.hidden && ed.saveT) flushSave(); });
@@ -877,12 +940,12 @@ function drawTable(ctx, rows, x, y, w, { fs, lab, pad, minRow, maxLines, measure
   const heights = metrics.map(ls => Math.max(minRow, ls.length * lh + pad * 1.3));
   const total = heights.reduce((a, b) => a + b, 0);
   if (measureOnly) return total;
-  ctx.save(); ctx.strokeStyle = '#2E3B33'; ctx.lineWidth = Math.max(1, fs / 18);
-  ctx.fillStyle = OUT.greenSoft; ctx.fillRect(x, y, lab, total);
+  ctx.save(); ctx.strokeStyle = OUT.line; ctx.lineWidth = Math.max(1, fs / 18);
+  ctx.fillStyle = OUT.soft; ctx.fillRect(x, y, lab, total);
   let yy = y;
   rows.forEach(([l, v], i) => {
     const hh = heights[i];
-    ctx.fillStyle = OUT.greenDark; ctx.font = `700 ${fs}px ${FONT_CANVAS}`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillStyle = OUT.ink; ctx.font = `700 ${fs}px ${FONT_CANVAS}`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
     ctx.fillText(l, x + lab / 2, yy + hh / 2);
     ctx.fillStyle = OUT.ink; ctx.textAlign = 'left'; ctx.font = `${i === 0 ? 400 : 500} ${fs}px ${FONT_CANVAS}`;
     const ls = metrics[i]; const startY = yy + hh / 2 - (ls.length - 1) * lh / 2;
@@ -895,72 +958,21 @@ function drawTable(ctx, rows, x, y, w, { fs, lab, pad, minRow, maxLines, measure
   ctx.restore();
   return total;
 }
-// Output colours: printed on white paper, so fixed rather than themed.
-const OUT = { green: '#12753B', greenDark: '#0B4A26', greenSoft: '#E3F2E8', yellow: '#FFC400', ink: '#15241B', muted: '#4D5E52' };
+// Output colours: the sheet is read on phones and printed, so fixed rather than themed.
+const OUT = { yellow: '#FFC400', soft: '#FFF2BF', ink: '#17150F', line: '#3A3527' };
 function photoRows(p) {
   const L = settings.labels;
   return [['날짜', fmtDT(p.takenAt)], [L.loc, p.fields.loc], [L.desc, p.fields.desc], [L.act, p.fields.act]];
 }
-// A4 portrait at 150 dpi
-const A4 = { w: 1240, h: 1754, m: 64 };
-function a4Header(ctx, insp, pageNo, total) {
-  const { w, m } = A4;
-  ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, A4.w, A4.h);
-  ctx.fillStyle = OUT.yellow; ctx.fillRect(m, m - 2, 12, 40);
-  ctx.fillStyle = OUT.green; ctx.font = `700 36px ${FONT_CANVAS}`; ctx.textBaseline = 'alphabetic'; ctx.textAlign = 'left';
-  ctx.fillText('사 진 대 지', m + 24, m + 30);
-  ctx.font = `500 24px ${FONT_CANVAS}`; ctx.fillStyle = OUT.ink;
-  const right = `${fmtDate(insp.date)}  ·  ${pageNo} / ${total}`;
-  ctx.textAlign = 'right'; ctx.fillText(right, w - m, m + 30);
-  ctx.textAlign = 'left';
-  const titleLine = wrapLines(ctx, `공사명: ${insp.title}${insp.category ? `   구분: ${insp.category}` : ''}${insp.inspector ? `   점검자: ${insp.inspector}` : ''}`, w - m * 2, 1)[0];
-  ctx.fillText(titleLine, m, m + 70);
-  ctx.fillStyle = OUT.green; ctx.fillRect(m, m + 86, w - m * 2, 5); ctx.fillStyle = OUT.yellow; ctx.fillRect(m, m + 91, w - m * 2, 3);
-  if (settings.company) { ctx.font = `400 18px ${FONT_CANVAS}`; ctx.fillStyle = '#6A737B'; ctx.textAlign = 'right'; ctx.fillText(settings.company, w - m, A4.h - m / 2); ctx.textAlign = 'left'; }
-  return m + 104;
-}
-async function composeA4Pages(insp, list, withCover) {
-  const pages = []; const total = Math.ceil(list.length / 2) + (withCover ? 1 : 0);
-  let pageNo = 0;
-  if (withCover) { pages.push(composeCover(insp, list.length)); pageNo++; }
-  const opt = { fs: 28, lab: 140, pad: 14, minRow: 52, maxLines: 2 };
-  for (let i = 0; i < list.length; i += 2) {
-    pageNo++;
-    const c = document.createElement('canvas'); c.width = A4.w; c.height = A4.h; const ctx = c.getContext('2d');
-    const top0 = a4Header(ctx, insp, pageNo, total);
-    const gap = 36, bottom = A4.h - A4.m;
-    const slotH = (bottom - top0 - gap) / 2, x = A4.m, w = A4.w - A4.m * 2;
-    for (let s = 0; s < 2; s++) {
-      const p = list[i + s]; const y = top0 + s * (slotH + gap);
-      if (!p) { ctx.strokeStyle = '#D5D9DC'; ctx.setLineDash([10, 8]); ctx.lineWidth = 2; ctx.strokeRect(x, y, w, slotH); ctx.setLineDash([]); continue; }
-      const rows = photoRows(p);
-      const th = drawTable(ctx, rows, x, 0, w, { ...opt, measureOnly: true });
-      const ph = slotH - th - 10;
-      ctx.fillStyle = '#F7F7F6'; ctx.fillRect(x, y, w, ph);
-      await drawPhoto(ctx, p, x, y, w, ph);
-      ctx.strokeStyle = '#2E3B33'; ctx.lineWidth = 1.2; ctx.strokeRect(x, y, w, ph);
-      drawTable(ctx, rows, x, y + ph + 10, w, opt);
-    }
-    pages.push(c);
-  }
-  return pages;
-}
-function composeCover(insp, n) {
-  const c = document.createElement('canvas'); c.width = A4.w; c.height = A4.h; const ctx = c.getContext('2d');
-  ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, A4.w, A4.h);
-  ctx.fillStyle = OUT.green; ctx.fillRect(0, 0, A4.w, 40); ctx.fillStyle = OUT.yellow; ctx.fillRect(0, 40, A4.w, 14);
-  ctx.fillStyle = OUT.green; ctx.textAlign = 'center'; ctx.font = `700 76px ${FONT_CANVAS}`; ctx.fillText('사 진 대 지', A4.w / 2, 520);
-  ctx.fillStyle = OUT.yellow; ctx.fillRect(360, 566, A4.w - 720, 8);
-  ctx.textAlign = 'left';
-  const rows = [['공 사 명', insp.title], ['점 검 일', fmtDate(insp.date)], ['구    분', insp.category || ''], ['점 검 자', insp.inspector || ''], ['사 진 수', `${n}장`]];
-  if (insp.note) rows.push(['비    고', insp.note]);
-  drawTable(ctx, rows, 200, 700, A4.w - 400, { fs: 30, lab: 200, pad: 22, minRow: 78, maxLines: 2 });
-  if (settings.company) { ctx.textAlign = 'center'; ctx.font = `600 34px ${FONT_CANVAS}`; ctx.fillText(settings.company, A4.w / 2, A4.h - 220); }
-  return c;
+function hazard(ctx, x, y, w, h) {
+  ctx.save(); ctx.beginPath(); ctx.rect(x, y, w, h); ctx.clip();
+  ctx.fillStyle = OUT.yellow; ctx.fillRect(x, y, w, h); ctx.fillStyle = OUT.ink;
+  for (let i = x - h; i < x + w + h; i += h * 2) { ctx.beginPath(); ctx.moveTo(i, y + h); ctx.lineTo(i + h, y); ctx.lineTo(i + h * 2, y); ctx.lineTo(i + h, y + h); ctx.closePath(); ctx.fill(); }
+  ctx.restore();
 }
 // One photo per image, sized for reading on a phone: the table type is about 4% of the width.
-async function composeSingle(insp, p) {
-  const W = 1200, m = 24, head = 104;
+async function composeSingle(day, p) {
+  const W = 1200, m = 24, band = 100, stripe = 14, head = band + stripe;
   const opt = { fs: 44, lab: 170, pad: 20, minRow: 82, maxLines: 4 };
   const mctx = document.createElement('canvas').getContext('2d');
   const rows = photoRows(p);
@@ -970,179 +982,56 @@ async function composeSingle(insp, p) {
   const H = Math.round(head + m + ph + 16 + th + m);
   const c = document.createElement('canvas'); c.width = W; c.height = H; const ctx = c.getContext('2d');
   ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, W, H);
-  ctx.fillStyle = OUT.green; ctx.fillRect(0, 0, W, head - 10); ctx.fillStyle = OUT.yellow; ctx.fillRect(0, head - 10, W, 10);
-  ctx.textBaseline = 'middle'; ctx.font = `400 34px ${FONT_CANVAS}`;
-  const dateW = ctx.measureText(fmtDate(insp.date)).width;
-  ctx.fillStyle = '#FFFFFF'; ctx.font = `700 46px ${FONT_CANVAS}`;
-  ctx.fillText(wrapLines(ctx, insp.title, W - m * 3 - dateW, 1)[0], m, (head - 10) / 2);
-  ctx.font = `500 34px ${FONT_CANVAS}`; ctx.fillStyle = OUT.yellow; ctx.textAlign = 'right'; ctx.fillText(fmtDate(insp.date), W - m, (head - 10) / 2); ctx.textAlign = 'left';
+  ctx.fillStyle = OUT.yellow; ctx.fillRect(0, 0, W, band);
+  hazard(ctx, 0, band, W, stripe);
+  const date = fmtDate(day.id);
+  ctx.textBaseline = 'middle'; ctx.fillStyle = OUT.ink;
+  ctx.font = `600 34px ${FONT_CANVAS}`; const dateW = ctx.measureText(date).width;
+  ctx.textAlign = 'right'; ctx.fillText(date, W - m, band / 2); ctx.textAlign = 'left';
+  ctx.font = `700 46px ${FONT_CANVAS}`;
+  ctx.fillText(wrapLines(ctx, siteOf(day) || '사진대지', W - m * 3 - dateW, 1)[0], m, band / 2);
   const y = head + m;
-  ctx.fillStyle = '#F4F6F2'; ctx.fillRect(m, y, pw, ph);
+  ctx.fillStyle = '#F4F2EC'; ctx.fillRect(m, y, pw, ph);
   await drawPhoto(ctx, p, m, y, pw, ph);
-  ctx.strokeStyle = '#2E3B33'; ctx.lineWidth = 1.5; ctx.strokeRect(m, y, pw, ph);
+  ctx.strokeStyle = OUT.line; ctx.lineWidth = 1.5; ctx.strokeRect(m, y, pw, ph);
   drawTable(ctx, rows, m, y + ph + 16, W - m * 2, opt);
   return c;
 }
 
-/* ---------- PDF writer (no external libraries; works offline) ---------- */
-const enc = new TextEncoder();
-async function jpegBytes(canvas, q = 0.86) { return new Uint8Array(await (await canvasToBlob(canvas, 'image/jpeg', q)).arrayBuffer()); }
-async function buildPDF(canvases, pageSize) {
-  const chunks = []; let len = 0; const offsets = [];
-  const push = b => { const u = typeof b === 'string' ? enc.encode(b) : b; chunks.push(u); len += u.length; };
-  const obj = (n, body) => { offsets[n] = len; push(`${n} 0 obj\n`); body(); push('\nendobj\n'); };
-  push('%PDF-1.4\n%\xE2\xE3\xCF\xD3\n');
-  const n = canvases.length; const kids = [];
-  for (let i = 0; i < n; i++) kids.push(`${3 + i * 3} 0 R`);
-  obj(1, () => push('<< /Type /Catalog /Pages 2 0 R >>'));
-  obj(2, () => push(`<< /Type /Pages /Count ${n} /Kids [${kids.join(' ')}] >>`));
-  for (let i = 0; i < n; i++) {
-    const c = canvases[i]; const jpg = await jpegBytes(c);
-    const [pw, ph] = pageSize ? pageSize : [595.28, +(595.28 * c.height / c.width).toFixed(2)];
-    const pn = 3 + i * 3, cn = pn + 1, im = pn + 2;
-    obj(pn, () => push(`<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${pw} ${ph}] /Resources << /XObject << /Im${i} ${im} 0 R >> >> /Contents ${cn} 0 R >>`));
-    const content = `q ${pw} 0 0 ${ph} 0 0 cm /Im${i} Do Q`;
-    obj(cn, () => push(`<< /Length ${content.length} >>\nstream\n${content}\nendstream`));
-    obj(im, () => { push(`<< /Type /XObject /Subtype /Image /Width ${c.width} /Height ${c.height} /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ${jpg.length} >>\nstream\n`); push(jpg); push('\nendstream'); });
-  }
-  const xref = len; const count = 3 + n * 3;
-  let x = `xref\n0 ${count}\n0000000000 65535 f \n`;
-  for (let i = 1; i < count; i++) x += `${String(offsets[i]).padStart(10, '0')} 00000 n \n`;
-  push(x); push(`trailer\n<< /Size ${count} /Root 1 0 R >>\nstartxref\n${xref}\n%%EOF`);
-  return new Blob(chunks, { type: 'application/pdf' });
-}
-/* ---------- saving files ---------- */
+/* ---------- saving or sharing a finished sheet ---------- */
 let dlNs;
 const downloadsNs = () => dlNs ??= (window.claude?.use ? window.claude.use('downloads').catch(() => null) : Promise.resolve(null));
 function blobToBase64(blob) {
   return new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(String(r.result).split(',')[1]); r.onerror = rej; r.readAsDataURL(blob); });
 }
-async function saveFileAndroid(blob, filename) {
-  const b64 = await blobToBase64(blob); const mime = blob.type || 'application/octet-stream';
-  openSheet(`<h2>파일을 어떻게 할까요?</h2><p>${esc(filename)}</p>
-    <button class="btn primary" id="aShare">카톡·메일로 보내기</button>
-    <button class="btn" id="aSave">휴대폰에 저장 (다운로드 폴더)</button>
-    <button class="btn" id="aCancel">닫기</button>`, s => {
-    $('#aCancel', s).onclick = closeSheet;
-    $('#aShare', s).onclick = () => { closeSheet(); const r = window.AndroidBridge.shareFile(filename, mime, b64); if (r !== 'ok') toast('보내기 창을 열지 못했습니다.'); };
-    $('#aSave', s).onclick = () => { closeSheet(); const r = window.AndroidBridge.saveFile(filename, mime, b64); toast(String(r).startsWith('error:') ? '저장하지 못했습니다. 저장 공간을 확인해 주세요.' : `${r}에 저장했습니다.`, 4000); };
-  });
+const safeName = s => String(s || '').replace(/[\\/:*?"<>|]+/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 30);
+function publishName(p) {
+  const d = new Date(p.takenAt);
+  const loc = safeName(p.fields.loc);
+  return `사진대지_${dayOf(p.takenAt).replaceAll('-', '')}_${pad2(d.getHours())}${pad2(d.getMinutes())}${loc ? '_' + loc : ''}.jpg`;
 }
-// Several separate files at once (no zip): Android shares or saves them all; elsewhere each is saved in turn.
-async function saveMany(files) {
-  if (files.length === 1) return saveFile(files[0].blob, files[0].name);
+// Returns the message to show once done, or null when nothing happened (cancelled or failed).
+async function deliver(blob, name, mode) {
   if (window.AndroidBridge) {
-    const items = [];
-    for (const f of files) items.push({ name: f.name, mime: f.blob.type || 'application/octet-stream', b64: await blobToBase64(f.blob) });
-    openSheet(`<h2>${files.length}장을 어떻게 할까요?</h2><p>사진마다 파일이 하나씩 따로 만들어집니다.</p>
-      <button class="btn primary" id="mShare">카톡·메일로 보내기 (${files.length}장)</button>
-      <button class="btn" id="mSave">휴대폰에 저장 (다운로드 폴더)</button>
-      <button class="btn" id="mCancel">닫기</button>`, s => {
-      $('#mCancel', s).onclick = closeSheet;
-      $('#mShare', s).onclick = () => { closeSheet(); const r = window.AndroidBridge.shareFiles(JSON.stringify(items)); if (r !== 'ok') toast('보내기 창을 열지 못했습니다.'); };
-      $('#mSave', s).onclick = () => {
-        closeSheet(); let ok = 0, where = '';
-        for (const it of items) { const r = String(window.AndroidBridge.saveFile(it.name, it.mime, it.b64)); if (!r.startsWith('error:')) { ok++; where = r; } }
-        toast(ok === items.length ? `${ok}장을 ${where}에 저장했습니다.` : `${items.length}장 중 ${ok}장만 저장했습니다.`, 4000);
-      };
-    });
-    return;
+    const b64 = await blobToBase64(blob);
+    const r = String(mode === 'share' ? window.AndroidBridge.shareFile(name, 'image/jpeg', b64) : window.AndroidBridge.saveFile(name, 'image/jpeg', b64));
+    if (r.startsWith('error:')) { toast(mode === 'share' ? '보내기 창을 열지 못했습니다.' : '저장하지 못했습니다. 저장 공간을 확인해 주세요.', 4000); return null; }
+    return mode === 'share' ? '발행했습니다. 보낼 곳을 고르세요.' : `발행했습니다. ${r}에 저장됨`;
   }
-  const list = files.map(f => new File([f.blob], f.name, { type: f.blob.type }));
-  if (navigator.canShare && navigator.share && /Android|iPhone|iPad/i.test(navigator.userAgent) && navigator.canShare({ files: list })) {
-    try { await navigator.share({ files: list }); return; } catch (e) { if (e.name === 'AbortError') return; }
+  if (mode === 'share') {
+    const file = new File([blob], name, { type: 'image/jpeg' });
+    if (navigator.share && (!navigator.canShare || navigator.canShare({ files: [file] }))) {
+      try { await navigator.share({ files: [file] }); return '발행했습니다.'; } catch (e) { if (e.name === 'AbortError') return null; }
+    }
   }
-  for (const f of files) await saveFile(f.blob, f.name);
-}
-async function saveFile(blob, filename) {
-  if (window.AndroidBridge) return saveFileAndroid(blob, filename);
   const ns = await downloadsNs();
   if (ns) {
-    try { await ns.save({ filename, data: blob }); toast('저장했습니다.'); }
-    catch (e) { if (e?.code !== 'declined') toast('이 화면에서는 파일을 저장할 수 없습니다.'); }
-    return;
+    try { await ns.save({ filename: name, data: blob }); return '발행했습니다. 파일을 저장했습니다.'; }
+    catch (e) { if (e?.code !== 'declined') toast('이 화면에서는 파일을 저장할 수 없습니다.'); return null; }
   }
-  const file = new File([blob], filename, { type: blob.type });
-  if (navigator.canShare && navigator.share && navigator.canShare({ files: [file] }) && /Android|iPhone|iPad/i.test(navigator.userAgent)) {
-    try { await navigator.share({ files: [file], title: filename }); return; } catch (e) { if (e.name === 'AbortError') return; }
-  }
-  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = filename;
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name;
   document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 30000);
-  toast('파일을 내려받았습니다.');
-}
-const safeName = s => String(s || '사진대지').replace(/[\\/:*?"<>|]+/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 60);
-
-/* ---------- export view ---------- */
-let previewURLs = [];
-async function renderExport() {
-  if (!current) return go('home');
-  setTop('출력', { back: () => go('insp') });
-  const list = photos.filter(p => p.include);
-  const miss = list.filter(p => !p.fields.desc.trim()).length;
-  const v = $('#view');
-  v.innerHTML = `
-    <section class="panel">
-      <span class="eyebrow">양식</span>
-      <div class="choice">
-        <button data-mode="single" aria-pressed="${state.exportMode === 'single'}"><b>건별 발행</b><span>사진마다 파일 한 개. 카톡·메일 공유용</span></button>
-        <button data-mode="a4" aria-pressed="${state.exportMode === 'a4'}"><b>A4 2장 구성</b><span>A4 세로 1매에 사진 2장. 인쇄·제출용 PDF</span></button>
-      </div>
-      ${state.exportMode === 'a4'
-        ? `<label class="check"><input type="checkbox" id="cover" ${state.cover ? 'checked' : ''}> 표지 넣기</label>`
-        : `<div class="seg" role="group" aria-label="파일 형식"><button data-fmt="jpg" aria-pressed="${state.singleFmt === 'jpg'}">JPG</button><button data-fmt="pdf" aria-pressed="${state.singleFmt === 'pdf'}">PDF</button></div><div class="meta-line">사진마다 파일이 하나씩 따로 만들어집니다. 아래 미리보기에서 한 장씩 발행할 수도 있습니다.</div>`}
-      <div class="meta-line">출력할 사진 ${list.length}장${photos.length - list.length ? ` (제외 ${photos.length - list.length}장)` : ''}${state.exportMode === 'a4' ? ` · ${Math.ceil(list.length / 2) + (state.cover ? 1 : 0)}매` : ''}</div>
-      ${miss ? `<div class="banner">설명이 비어 있는 사진이 ${miss}장 있습니다. 그대로 출력하면 빈 칸으로 나옵니다.</div>` : ''}
-    </section>
-    <div class="row between"><span class="eyebrow">미리보기</span></div>
-    <div class="pages" id="pages"><span class="meta-line">미리보기를 만드는 중…</span></div>
-  `;
-  v.querySelectorAll('[data-mode]').forEach(b => b.onclick = () => { state.exportMode = b.dataset.mode; renderExport(); });
-  v.querySelectorAll('[data-fmt]').forEach(b => b.onclick = () => { state.singleFmt = b.dataset.fmt; renderExport(); });
-  const cv = $('#cover'); if (cv) cv.onchange = e => { state.cover = e.target.checked; renderExport(); };
-  const label = state.exportMode === 'a4' ? 'PDF 저장' : `${list.length}장 모두 발행 (${state.singleFmt.toUpperCase()})`;
-  setActions(`<button class="btn primary grow" id="saveBtn" ${list.length ? '' : 'disabled'}>${svg('print')}${label}</button>`);
-  $('#saveBtn').onclick = () => doExport(list);
-  if (!list.length) { $('#pages').innerHTML = '<span class="meta-line">출력에 포함된 사진이 없습니다.</span>'; return; }
-  const myView = state.view, myMode = state.exportMode;
-  const canvases = await buildCanvases(list);
-  if (state.view !== myView || state.exportMode !== myMode) return;
-  previewURLs.forEach(u => URL.revokeObjectURL(u)); previewURLs = [];
-  const pg = $('#pages'); pg.innerHTML = '';
-  for (let i = 0; i < canvases.length; i++) {
-    const b = await canvasToBlob(canvases[i], 'image/jpeg', 0.7); const u = URL.createObjectURL(b); previewURLs.push(u);
-    const fig = document.createElement('figure'); fig.style.margin = '0'; fig.style.display = 'grid'; fig.style.gap = '6px'; fig.style.justifyItems = 'center'; fig.style.width = '100%';
-    fig.innerHTML = `<img src="${u}" alt="${i + 1}쪽 미리보기"><figcaption class="cap">${i + 1} / ${canvases.length}</figcaption>`;
-    if (myMode === 'single') {
-      const btn = document.createElement('button'); btn.className = 'btn primary small'; btn.innerHTML = `${svg('send')}이 장 발행`;
-      const c = canvases[i], ph = list[i], no = i + 1;
-      btn.onclick = async () => { const f = await singleFile(c, ph, no); await saveFile(f.blob, f.name); };
-      fig.appendChild(btn);
-    }
-    pg.appendChild(fig);
-  }
-}
-async function buildCanvases(list) {
-  if (state.exportMode === 'a4') return composeA4Pages(current, list, state.cover);
-  const out = []; for (let i = 0; i < list.length; i++) out.push(await composeSingle(current, list[i])); return out;
-}
-// One finished file per photo (건별 발행): JPG or PDF, named by date, number and location.
-async function singleFile(canvas, p, no) {
-  const base = `사진대지_${current.date}_${String(no).padStart(2, '0')}${p.fields.loc ? '_' + safeName(p.fields.loc) : ''}`;
-  if (state.singleFmt === 'pdf') return { blob: await buildPDF([canvas], null), name: `${base}.pdf` };
-  return { blob: await canvasToBlob(canvas, 'image/jpeg', 0.9), name: `${base}.jpg` };
-}
-async function doExport(list) {
-  const btn = $('#saveBtn'); btn.disabled = true; const old = btn.innerHTML; btn.textContent = '파일 만드는 중…';
-  try {
-    const canvases = await buildCanvases(list);
-    if (state.exportMode === 'a4') await saveFile(await buildPDF(canvases, [595.28, 841.89]), `사진대지_${safeName(current.title)}_${current.date}.pdf`);
-    else {
-      const files = [];
-      for (let i = 0; i < canvases.length; i++) files.push(await singleFile(canvases[i], list[i], i + 1));
-      await saveMany(files);
-    }
-  } catch (e) { console.error(e); toast('파일을 만들지 못했습니다. 사진 수를 줄여 다시 시도해 주세요.'); }
-  finally { btn.disabled = false; btn.innerHTML = old; }
+  return '발행했습니다. 파일을 내려받았습니다.';
 }
 
 /* ---------- settings ---------- */
@@ -1151,8 +1040,8 @@ function renderSettings() {
   const L = settings.labels;
   $('#view').innerHTML = `
     <form id="sForm" class="panel fields">
-      <div class="field"><label for="sCo">회사명 (출력물 하단·표지)</label><input type="text" id="sCo" value="${esc(settings.company)}" placeholder="예: OO건설 품질팀"></div>
-      <div class="field"><label for="sWho">기본 점검자</label><input type="text" id="sWho" value="${esc(settings.inspector)}"></div>
+      <div class="field"><label for="sSite">현장명 (사진대지 제목)</label><input type="text" id="sSite" value="${esc(settings.site)}" placeholder="예: OO아파트 신축공사"></div>
+      <span class="meta-line">새로 시작하는 날부터 적용됩니다. 지난 날짜는 그 날 화면의 ⋮ 버튼에서 바꿀 수 있습니다.</span>
       <span class="eyebrow">사진 하단 설명칸 이름</span>
       <div class="row" style="flex-wrap:nowrap">
         <input type="text" id="sL1" aria-label="첫째 칸" value="${esc(L.loc)}"><input type="text" id="sL2" aria-label="둘째 칸" value="${esc(L.desc)}"><input type="text" id="sL3" aria-label="셋째 칸" value="${esc(L.act)}">
@@ -1161,19 +1050,21 @@ function renderSettings() {
       <label class="check"><input type="checkbox" id="sGeo" ${settings.geo ? 'checked' : ''}> 사진 추가할 때 현재 위치(GPS) 기록</label>
       <button class="btn primary" type="submit">저장</button>
     </form>
-    <p class="meta-line">사진과 기록은 이 기기 안에만 저장됩니다. 앱 데이터를 지우면 함께 지워지니, 끝난 점검은 PDF로 저장해 두세요.</p>`;
+    <p class="meta-line">사진과 기록은 이 기기 안에만 저장됩니다. 앱을 지우면 함께 지워지니, 필요한 사진은 발행해 두세요.</p>`;
   $('#sForm').onsubmit = async e => {
     e.preventDefault();
-    settings.company = $('#sCo').value.trim(); settings.inspector = $('#sWho').value.trim();
+    settings.site = $('#sSite').value.trim();
     settings.labels = { loc: $('#sL1').value.trim() || '위치', desc: $('#sL2').value.trim() || '내용', act: $('#sL3').value.trim() || '조치' };
     settings.phrases = $('#sPh').value.split('\n').map(s => s.trim()).filter(Boolean).slice(0, 40);
     settings.geo = $('#sGeo').checked;
+    const td = await store.get('days', today());
+    if (td && !td.order.length) { td.site = settings.site; await store.put('days', td); }
     await saveSettings(); toast('저장했습니다.'); go('home');
   };
   setActions('');
 }
 
-/* ---------- sample data (clearly labelled 예시) ---------- */
+/* ---------- sample day (clearly labelled 예시, on yesterday) ---------- */
 function synthPhoto(kind) {
   const c = document.createElement('canvas'); c.width = 1600; c.height = 1200; const x = c.getContext('2d');
   const g = x.createLinearGradient(0, 0, 0, 1200); g.addColorStop(0, '#9BA3A8'); g.addColorStop(1, '#6F777C'); x.fillStyle = g; x.fillRect(0, 0, 1600, 1200);
@@ -1193,27 +1084,31 @@ function synthPhoto(kind) {
   return c;
 }
 async function seedSample() {
-  const insp = { id: uid(), title: '(예시) OO아파트 신축공사 3층 골조', date: today(), category: '품질', inspector: '홍길동', note: '예시 데이터입니다. 지워도 됩니다.', order: [], sample: true, createdAt: Date.now(), updatedAt: Date.now() };
+  const y = new Date(); y.setDate(y.getDate() - 1); y.setHours(10, 0, 0, 0);
+  const day = { id: dayOf(y), site: '(예시) OO아파트 신축공사', order: [], sample: true, updatedAt: Date.now() };
   const data = [
     { f: { loc: '3층 B구역 기둥 C-3', desc: '피복 두께 부족, 철근 노출', act: '보수 후 재점검 요청' }, m: [{ t: 'circle', x1: .37, y1: .26, x2: .63, y2: .66, c: '#E53935', w: 3 }, { t: 'text', x: .66, y: .3, s: '철근 노출', c: '#E53935', w: 2 }] },
     { f: { loc: '4층 계단실', desc: '안전난간 미설치', act: '즉시 설치 지시' }, m: [{ t: 'arrow', x1: .55, y1: .2, x2: .74, y2: .42, c: '#FDD835', w: 3 }, { t: 'num', x: .5, y: .16, n: 1, c: '#FDD835', w: 2 }] },
     { f: { loc: '3층 A구역 벽체', desc: '', act: '' }, m: [{ t: 'rect', x1: .22, y1: .06, x2: .48, y2: .95, c: '#E53935', w: 2 }] },
   ];
   for (let k = 0; k < data.length; k++) {
-    const c = synthPhoto(k);
-    const big = await canvasToBlob(c, 'image/jpeg', 0.85); const th = await scaled(c, THUMB, 0.75);
-    const p = { id: uid(), inspectionId: insp.id, data: await big.arrayBuffer(), type: 'image/jpeg', thumb: await th.blob.arrayBuffer(), w: 1600, h: 1200, takenAt: Date.now() - (3 - k) * 600000, lat: null, lng: null, fields: data[k].f, marks: data[k].m, include: true };
-    await store.put('photos', p); insp.order.push(p.id);
+    const c = synthPhoto(k); const th = drawScaled(c, THUMB);
+    const [bb, tb] = await Promise.all([canvasToBlob(c, 'image/jpeg', 0.85), canvasToBlob(th, 'image/jpeg', 0.72)]);
+    const id = uid() + k;
+    await store.put('blobs', { id, blob: bb }); await store.put('thumbs', { id, blob: tb });
+    await store.put('photos', { id, day: day.id, w: 1600, h: 1200, takenAt: y.getTime() + k * 1200000, lat: null, lng: null, fields: data[k].f, marks: data[k].m, publishedAt: null });
+    day.order.push(id);
   }
-  await store.put('inspections', insp);
+  await store.put('days', day);
 }
 
 /* ---------- boot ---------- */
 (async () => {
   idb = await openDB();
   await loadSettings();
+  try { await migrate(); } catch (e) { console.error(e); }
   try {
-    if (!settings.seeded) { const any = await store.all('inspections'); if (!any.length) await seedSample(); settings.seeded = true; await saveSettings(); }
+    if (!settings.seeded) { const any = await store.all('days'); if (!any.length) await seedSample(); settings.seeded = true; await saveSettings(); }
   } catch (e) {}
   if (document.fonts && document.fonts.load) { try { await Promise.race([document.fonts.load(`700 20px ${FONT_CANVAS}`), new Promise(r => setTimeout(r, 1500))]); } catch (e) {} }
   render();

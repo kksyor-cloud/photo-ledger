@@ -1,21 +1,22 @@
 # 현장 사진대지 (웹앱 MVP)
 
 건설 현장 점검 사진을 찍고, 사진 위에 표시하고, 하단에 위치·내용·조치를 입력해
-사진마다 한 장씩(건별 JPG/PDF) 또는 A4 1매 2장 구성 PDF로 발행하는 앱입니다.
+사진마다 한 장씩 사진대지(JPG)로 발행하는 앱입니다. 메인 화면은 날짜별(오늘 / 지난 기록)로 정리됩니다.
 앱 주소: https://kksyor-cloud.github.io/photo-ledger/
 
 ## 구성
-- `src/app.html` — 앱 전체(화면, 저장, 마킹, 음성 입력, JPG/PDF 생성). 외부 라이브러리 없음.
+- `src/app.html` — 앱 전체(화면, 저장, 마킹, 음성 입력, 사진대지 JPG 생성). 외부 라이브러리 없음.
 - `src/sw.js`, `src/manifest.webmanifest`, `src/icon*` — 오프라인 동작과 홈 화면 설치용.
 - `build.sh` — `docs/`에 설치형 웹앱(PWA)을 만듭니다: `sh build.sh` (GitHub Pages가 `docs/`를 그대로 서비스)
 - `docs/` — 빌드 결과물. 앱 주소: https://kksyor-cloud.github.io/photo-ledger/
 
 ## 기획서 대비 결정
 - 기획서는 Flutter 앱을 권장했지만, 설치 없이 휴대폰에서 바로 써 볼 수 있도록 MVP를 웹앱(PWA)으로 먼저 만들었습니다.
-  저장 구조(점검 건 / 사진 / 비율 좌표 마킹)는 기획서 7장과 같아서 Flutter로 옮길 때 그대로 씁니다.
+  저장 구조는 날짜(days) / 사진 정보(photos) / 원본·썸네일(blobs·thumbs)로 나눠, 입력할 때마다 작은 기록만 저장합니다.
+  1.0.3 이전의 점검 건 데이터는 처음 실행할 때 날짜별 기록으로 옮겨집니다.
 - 데이터는 기기 안(IndexedDB)에만 저장합니다. 클라우드 백업은 2단계.
 - 음성 입력은 브라우저 음성 인식(ko-KR)을 쓰고, 안 되는 환경에서는 키보드 마이크 입력을 안내합니다.
-- PDF는 A4(150dpi) 페이지를 이미지로 그려 넣는 방식이라 글꼴 내장 없이 한글이 깨지지 않습니다.
+- A4 묶음 출력과 PDF는 1.0.4에서 뺐습니다(건별 발행만 사용).
 
 ## 로컬 실행
     sh build.sh && cd docs && python3 -m http.server 8000
